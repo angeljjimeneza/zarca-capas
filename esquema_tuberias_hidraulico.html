@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esquema de Tuberías — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#0a0e1a;color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;padding:24px 16px;
+  }
+  h1{
+    font-family:'Space Mono',monospace;font-size:1.25rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#5eead4;margin-bottom:4px;text-align:center;
+  }
+  .subtitle{font-size:.82rem;color:#64748b;margin-bottom:6px;text-align:center;}
+  .nota{
+    width:100%;max-width:1600px;
+    background:rgba(94,234,212,.06);border:1px solid rgba(94,234,212,.2);
+    border-radius:10px;padding:10px 18px;margin-bottom:16px;
+    display:flex;gap:12px;align-items:flex-start;font-size:.78rem;line-height:1.5;
+  }
+  .nota strong{color:#5eead4;}
+  .schema-container{
+    width:100%;max-width:1600px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:16px;padding:20px;
+    position:relative;overflow-x:auto;
+  }
+  svg{width:100%;height:auto;display:block;min-width:1500px;}
+
+  .legend{
+    display:flex;flex-wrap:wrap;gap:14px;
+    margin-top:20px;justify-content:center;max-width:1600px;width:100%;
+  }
+  .leg-item{display:flex;align-items:center;gap:7px;font-size:.76rem;color:#94a3b8;}
+  .leg-line{width:36px;height:5px;border-radius:3px;}
+
+  .cards-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:12px;width:100%;max-width:1600px;margin-top:16px;
+  }
+  .det-card{
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:10px;padding:16px;border-left:3px solid;
+  }
+  .det-card h3{
+    font-family:'Space Mono',monospace;font-size:.7rem;
+    text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;
+  }
+  .det-card p{font-size:.78rem;line-height:1.6;color:#94a3b8;}
+
+  @keyframes flowPipe{0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
+  @keyframes flowRev{0%{stroke-dashoffset:0}100%{stroke-dashoffset:60}}
+  @keyframes flowDrain{0%{stroke-dashoffset:0}100%{stroke-dashoffset:60}}
+  .imp{stroke-dasharray:10 4;animation:flowPipe 2s linear infinite;}
+  .suc{stroke-dasharray:8 3;animation:flowRev 2s linear infinite;}
+  .drain{stroke-dasharray:6 5;animation:flowDrain 3s linear infinite;}
+  .rebose{stroke-dasharray:5 6;animation:flowDrain 2.5s linear infinite;}
+</style>
+</head>
+<body>
+
+<h1>Esquema de Tuberías — Distribución Hidráulica Completa</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium · PVC PN10 · Impulsión · Succión · Drenaje · Skimmer · Rebose · Acometida red · Ref. ZP-9M-PREM-2026-001</p>
+
+<div class="nota">
+  <span style="font-size:1.1rem;margin-top:1px">⚠</span>
+  <span><strong>NOTA:</strong> Este esquema es orientativo. Los diámetros, longitudes, número de boquillas y configuración del sistema pueden variar según el tipo de piscina, volumen, sistemas opcionales instalados y normativa municipal aplicable. La instalación hidráulica debe ser ejecutada por un técnico autorizado conforme a la normativa vigente. La conexión a red de saneamiento o pluviales requiere autorización del gestor de la red local.</span>
+</div>
+
+<div class="schema-container">
+<svg viewBox="0 0 1500 980" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="g1"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="g2"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+
+  <!-- MARCADORES FLUJO IMPULSIÓN (verde azulado) -->
+  <marker id="aI" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#5eead4" opacity=".9"/></marker>
+  <!-- MARCADORES FLUJO SUCCIÓN (azul) -->
+  <marker id="aS" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#60a5fa" opacity=".9"/></marker>
+  <!-- MARCADORES DRENAJE (naranja) -->
+  <marker id="aD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f97316" opacity=".9"/></marker>
+  <!-- MARCADORES REBOSE (amarillo) -->
+  <marker id="aR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#fbbf24" opacity=".9"/></marker>
+  <!-- MARCADORES LLENADO (celeste) -->
+  <marker id="aL" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#38bdf8" opacity=".9"/></marker>
+  <!-- MARCADORES CALLE (rojo ladrillo) -->
+  <marker id="aC" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#fb923c" opacity=".9"/></marker>
+
+  <!-- Símbolo válvula de mariposa -->
+  <symbol id="valve" viewBox="0 0 20 20">
+    <circle cx="10" cy="10" r="7" fill="#0f1629" stroke="#475569" stroke-width="1.5"/>
+    <line x1="10" y1="3" x2="10" y2="17" stroke="#5eead4" stroke-width="1.5"/>
+    <line x1="3" y1="10" x2="17" y2="10" stroke="#5eead4" stroke-width="1.5"/>
+  </symbol>
+
+  <!-- Símbolo válvula antirretorno -->
+  <symbol id="check" viewBox="0 0 20 16">
+    <circle cx="8" cy="8" r="6" fill="#0f1629" stroke="#60a5fa" stroke-width="1.5"/>
+    <polygon points="5,6 5,10 11,8" fill="#60a5fa"/>
+    <line x1="13" y1="4" x2="13" y2="12" stroke="#60a5fa" stroke-width="1.5"/>
+  </symbol>
+
+  <!-- Símbolo T tubería -->
+  <symbol id="tee" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="4" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  </symbol>
+</defs>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TITULO Y LEYENDA COLORES -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<text x="750" y="18" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#334155">PVC PN10 C-PVC en tramos calientes · Juntas EPDM · Pegamento PVC C 917 · Pendientes ≥ 1% en drenajes</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ZONA: VASO PISCINA (centro) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<rect x="440" y="60" width="620" height="400" rx="10" fill="rgba(14,116,144,.08)" stroke="#5eead4" stroke-width="2" filter="url(#g1)"/>
+<text x="750" y="82" text-anchor="middle" font-family="Space Mono" font-size="11" fill="#5eead4" font-weight="700" letter-spacing="2">VASO · 9,0 × 2,44 × 1,50 m · 33.500 L</text>
+<text x="750" y="96" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#64748b">Gresite premium · Sistema WEDI · Chasis Cor-Ten Naval</text>
+
+<!-- NIVEL AGUA -->
+<line x1="450" y1="160" x2="1050" y2="160" stroke="#5eead4" stroke-width="1" stroke-dasharray="4 4" opacity=".4"/>
+<text x="455" y="155" font-family="Space Mono" font-size="7" fill="#5eead4" opacity=".6">NML (Nivel Máximo de Lámina)</text>
+
+<!-- ── SKIMMER (pared lateral izquierda del vaso) ── -->
+<rect x="440" y="130" width="40" height="60" rx="5" fill="#131b2e" stroke="#fbbf24" stroke-width="1.5" filter="url(#g1)"/>
+<text x="460" y="149" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24" font-weight="700">SKIM</text>
+<text x="460" y="161" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#64748b">½&quot; lámina</text>
+<text x="460" y="173" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#fbbf24">DN50</text>
+<!-- Boca skimmer -->
+<rect x="440" y="150" width="12" height="28" rx="2" fill="rgba(251,191,36,.2)" stroke="#fbbf24" stroke-width="1"/>
+<text x="432" y="125" font-family="Space Mono" font-size="7" fill="#fbbf24">Cesta prefiltro</text>
+
+<!-- ── SUMIDERO FONDO (centro fondo del vaso) ── -->
+<rect x="700" y="430" width="100" height="30" rx="5" fill="#131b2e" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="750" y="443" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#60a5fa" font-weight="700">SUMIDERO FONDO · DN50</text>
+<text x="750" y="455" text-anchor="middle" font-size="6.5" fill="#64748b">Tapa INOX · Doble rejilla anti-atrapamiento · DIN 12791</text>
+
+<!-- ── BOQUILLAS RETORNO (pared derecha del vaso) ── -->
+<rect x="1050" y="200" width="40" height="55" rx="5" fill="#131b2e" stroke="#5eead4" stroke-width="1.5"/>
+<text x="1070" y="218" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#5eead4" font-weight="700">BOQ.RET.</text>
+<text x="1070" y="229" text-anchor="middle" font-size="6" fill="#5eead4">× 2</text>
+<text x="1070" y="241" text-anchor="middle" font-size="6" fill="#64748b">DN40</text>
+<text x="1070" y="252" text-anchor="middle" font-size="6" fill="#64748b">INOX 316L</text>
+
+<!-- ── CAÑÓN CONTRACORRIENTE (pared derecha, más abajo) ── -->
+<rect x="1050" y="280" width="40" height="60" rx="5" fill="#131b2e" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="1070" y="298" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#22d3ee" font-weight="700">CAÑÓN</text>
+<text x="1070" y="309" text-anchor="middle" font-size="6" fill="#22d3ee">NCC</text>
+<text x="1070" y="320" text-anchor="middle" font-size="6" fill="#64748b">DN50</text>
+<text x="1070" y="331" text-anchor="middle" font-size="6" fill="#64748b">INOX</text>
+
+<!-- ── GRIFO LLENADO FONDO ── -->
+<rect x="600" y="70" width="100" height="30" rx="5" fill="#131b2e" stroke="#38bdf8" stroke-width="1.5"/>
+<text x="650" y="84" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#38bdf8" font-weight="700">LLENADO FONDO · DN25</text>
+<text x="650" y="96" text-anchor="middle" font-size="6.5" fill="#64748b">Válvula bola + piloto nivel · Agua red</text>
+
+<!-- ── REBOSE LATERAL (nivel alto) ── -->
+<rect x="900" y="130" width="70" height="35" rx="5" fill="#131b2e" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="935" y="147" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24" font-weight="700">REBOSE · DN50</text>
+<text x="935" y="159" text-anchor="middle" font-size="6.5" fill="#64748b">NML + 30mm</text>
+
+<!-- ── VACIADO TOTAL DEL VASO (fondo) ── -->
+<rect x="560" y="430" width="130" height="30" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+<text x="625" y="443" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#f97316" font-weight="700">VACIADO TOTAL DN63</text>
+<text x="625" y="455" text-anchor="middle" font-size="6.5" fill="#64748b">Válvula de compuerta · Accionamiento manual</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SALA DE MÁQUINAS (izquierda) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<rect x="30" y="180" width="380" height="420" rx="10" fill="#0c1528" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="8 4"/>
+<text x="220" y="202" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#C9A84C" font-weight="700" letter-spacing="2">SALA DE MÁQUINAS</text>
+<text x="220" y="218" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#64748b">Manifold PVC · Válvula 6 vías · Bombas + Filtro + Equipos tratamiento</text>
+
+<!-- BOMBA B-01 FILTRACIÓN -->
+<rect x="50" y="234" width="130" height="65" rx="7" fill="#131b2e" stroke="#C9A84C" stroke-width="1.5" filter="url(#g1)"/>
+<text x="115" y="250" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#C9A84C" font-weight="700">B-01 · FILTRACIÓN</text>
+<text x="115" y="263" text-anchor="middle" font-size="7" fill="#64748b">1,5 kW · IP55 · Prefiltro</text>
+<text x="115" y="275" text-anchor="middle" font-size="7" fill="#64748b">Q: 8–12 m³/h</text>
+<text x="115" y="287" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#C9A84C">H: 10 m.c.a.</text>
+<text x="115" y="297" text-anchor="middle" font-size="6" fill="#64748b">Rotor bronce · EPDM</text>
+
+<!-- FILTRO VIDRIO D600 -->
+<rect x="240" y="234" width="155" height="65" rx="7" fill="#131b2e" stroke="#60a5fa" stroke-width="1.5" filter="url(#g1)"/>
+<text x="317" y="250" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#60a5fa" font-weight="700">FILTRO VIDRIO Ø600</text>
+<text x="317" y="263" text-anchor="middle" font-size="7" fill="#64748b">Válvula 6 vías manual</text>
+<text x="317" y="275" text-anchor="middle" font-size="7" fill="#64748b">Vidrio activo reciclado</text>
+<text x="317" y="287" text-anchor="middle" font-size="7" fill="#64748b">Manóm. entrada/salida</text>
+<text x="317" y="297" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#60a5fa">Retrolavado semanal</text>
+
+<!-- MANIFOLD ASPIRACIÓN (T-pieza colector) -->
+<rect x="50" y="330" width="340" height="30" rx="4" fill="#131b2e" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="220" y="344" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#60a5fa" font-weight="700">MANIFOLD SUCCIÓN · DN63 PVC PN10</text>
+<text x="220" y="357" text-anchor="middle" font-size="6.5" fill="#64748b">Derivaciones: Skimmer (VB1) + Sumidero (VB2) + Vaciado (VB3)</text>
+
+<!-- MANIFOLD IMPULSIÓN -->
+<rect x="50" y="380" width="340" height="30" rx="4" fill="#131b2e" stroke="#5eead4" stroke-width="1.5"/>
+<text x="220" y="394" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#5eead4" font-weight="700">MANIFOLD IMPULSIÓN · DN50 PVC PN10</text>
+<text x="220" y="407" text-anchor="middle" font-size="6.5" fill="#64748b">Derivaciones: Boquillas Ret. (VI1) + Cañón NCC (VI2) + Contracorriente</text>
+
+<!-- VÁLVULA 6 VÍAS -->
+<rect x="135" y="430" width="140" height="42" rx="6" fill="#131b2e" stroke="#fbbf24" stroke-width="1.5" filter="url(#g1)"/>
+<text x="205" y="448" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#fbbf24" font-weight="700">VÁLVULA 6 VÍAS</text>
+<text x="205" y="462" text-anchor="middle" font-size="7" fill="#64748b">Filtrar · Retrolavado · Aclarado</text>
+<text x="205" y="472" text-anchor="middle" font-size="6.5" fill="#64748b">Vaciado · Recirculación · Cerrado</text>
+
+<!-- BOMBA B-02 CONTRACORRIENTE -->
+<rect x="50" y="490" width="130" height="65" rx="7" fill="#131b2e" stroke="#22d3ee" stroke-width="1.5" filter="url(#g1)"/>
+<text x="115" y="506" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#22d3ee" font-weight="700">B-02 · CONTRACORR.</text>
+<text x="115" y="518" text-anchor="middle" font-size="7" fill="#64748b">2,2 kW · IP55</text>
+<text x="115" y="530" text-anchor="middle" font-size="7" fill="#64748b">Q: 30–70 m³/h</text>
+<text x="115" y="542" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#22d3ee">Turbina monobloc</text>
+<text x="115" y="553" text-anchor="middle" font-size="6" fill="#64748b">Activ. neumático</text>
+
+<!-- BYPASS UV + EQUIPOS TRATAMIENTO -->
+<rect x="200" y="490" width="185" height="95" rx="7" fill="#0d1520" stroke="#fbbf24" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="292" y="507" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#fbbf24" font-weight="700">BYPASS TRATAMIENTO</text>
+<!-- UV -->
+<rect x="208" y="514" width="78" height="30" rx="4" fill="#131b2e" stroke="#fbbf24" stroke-width="1"/>
+<text x="247" y="527" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#fbbf24" font-weight="700">UV</text>
+<text x="247" y="538" text-anchor="middle" font-size="6" fill="#64748b">Lámpa.cuarzo</text>
+<!-- Clorador -->
+<rect x="296" y="514" width="78" height="30" rx="4" fill="#131b2e" stroke="#4ade80" stroke-width="1"/>
+<text x="335" y="527" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#4ade80" font-weight="700">CLORADOR</text>
+<text x="335" y="538" text-anchor="middle" font-size="6" fill="#64748b">Salino Ti</text>
+<!-- pH -->
+<rect x="208" y="552" width="78" height="28" rx="4" fill="#131b2e" stroke="#f472b6" stroke-width="1"/>
+<text x="247" y="564" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#f472b6" font-weight="700">DOSIF. pH</text>
+<text x="247" y="574" text-anchor="middle" font-size="6" fill="#64748b">Peristáltica</text>
+<!-- Sonda -->
+<rect x="296" y="552" width="78" height="28" rx="4" fill="#131b2e" stroke="#f97316" stroke-width="1"/>
+<text x="335" y="564" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#f97316" font-weight="700">SONDA pH</text>
+<text x="335" y="574" text-anchor="middle" font-size="6" fill="#64748b">ORP · Temp</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ZONA INFERIOR: CONEXIONES A EXTERIOR (drenaje, rebose, llenado) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<rect x="30" y="640" width="1440" height="220" rx="10" fill="#0c1018" stroke="#475569" stroke-width="1" stroke-dasharray="6 5"/>
+<text x="750" y="660" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#475569" font-weight="700" letter-spacing="2">CONEXIONES A EXTERIOR · CALLE / RED DE SANEAMIENTO</text>
+
+<!-- ARQUETA SANEAMIENTO -->
+<rect x="200" y="680" width="180" height="80" rx="8" fill="#131b2e" stroke="#f97316" stroke-width="1.5" filter="url(#g1)"/>
+<text x="290" y="700" text-anchor="middle" font-family="Space Mono" font-size="8.5" fill="#f97316" font-weight="700">ARQUETA VACIADO</text>
+<text x="290" y="714" text-anchor="middle" font-size="7" fill="#64748b">DN200 · Fondo drenante</text>
+<text x="290" y="726" text-anchor="middle" font-size="7" fill="#64748b">Recibe: Vaciado + Drenaje suelo</text>
+<text x="290" y="738" text-anchor="middle" font-size="7" fill="#64748b">+ Retrolavado filtro</text>
+<text x="290" y="750" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">→ Red pluvial / Saneamiento</text>
+
+<!-- ARQUETA REBOSE -->
+<rect x="450" y="680" width="180" height="80" rx="8" fill="#131b2e" stroke="#fbbf24" stroke-width="1.5" filter="url(#g1)"/>
+<text x="540" y="700" text-anchor="middle" font-family="Space Mono" font-size="8.5" fill="#fbbf24" font-weight="700">ARQUETA REBOSE</text>
+<text x="540" y="714" text-anchor="middle" font-size="7" fill="#64748b">DN160 · Conexión directa vaso</text>
+<text x="540" y="726" text-anchor="middle" font-size="7" fill="#64748b">Recibe: Rebose lateral NML</text>
+<text x="540" y="738" text-anchor="middle" font-size="7" fill="#64748b">Umbral: NML + 30mm</text>
+<text x="540" y="750" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24">→ Red pluvial / Saneamiento</text>
+
+<!-- RED DE SUMINISTRO AGUA POTABLE -->
+<rect x="700" y="680" width="220" height="80" rx="8" fill="#131b2e" stroke="#38bdf8" stroke-width="1.5" filter="url(#g1)"/>
+<text x="810" y="700" text-anchor="middle" font-family="Space Mono" font-size="8.5" fill="#38bdf8" font-weight="700">SUMINISTRO AGUA POTABLE</text>
+<text x="810" y="714" text-anchor="middle" font-size="7" fill="#64748b">Toma DN25 · P: 2–6 bar</text>
+<text x="810" y="726" text-anchor="middle" font-size="7" fill="#64748b">Válvula de corte + antirretorno</text>
+<text x="810" y="738" text-anchor="middle" font-size="7" fill="#64748b">Llenado inicial: ~33.500 L</text>
+<text x="810" y="750" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#38bdf8">Responsabilidad del cliente</text>
+
+<!-- DRENAJE SUELO SALA MÁQUINAS -->
+<rect x="990" y="680" width="200" height="80" rx="8" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+<text x="1090" y="700" text-anchor="middle" font-family="Space Mono" font-size="8.5" fill="#f97316" font-weight="700">DRENAJE SALA TÉCNICA</text>
+<text x="1090" y="714" text-anchor="middle" font-size="7" fill="#64748b">Sumidero suelo DN63</text>
+<text x="1090" y="726" text-anchor="middle" font-size="7" fill="#64748b">Recoge: fugas + condensación</text>
+<text x="1090" y="738" text-anchor="middle" font-size="7" fill="#64748b">Sifón hidráulico anti-olores</text>
+<text x="1090" y="750" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">→ Arqueta vaciado</text>
+
+<!-- NOTA NORMATIVA SANEAMIENTO -->
+<rect x="1260" y="680" width="200" height="80" rx="8" fill="rgba(71,85,105,.15)" stroke="#334155" stroke-width="1.5"/>
+<text x="1360" y="700" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#334155" font-weight="700">NORMATIVA CONEXIÓN</text>
+<text x="1360" y="714" text-anchor="middle" font-size="6.5" fill="#475569">El agua de vaciado puede</text>
+<text x="1360" y="724" text-anchor="middle" font-size="6.5" fill="#475569">contener cloro residual.</text>
+<text x="1360" y="734" text-anchor="middle" font-size="6.5" fill="#475569">Consultar con gestor red</text>
+<text x="1360" y="744" text-anchor="middle" font-size="6.5" fill="#475569">local antes de conectar.</text>
+<text x="1360" y="756" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#334155">Dilución previa si requiere.</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TUBERÍAS — LÍNEAS ANIMADAS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- SUCCIÓN: Skimmer → Manifold succión (azul) -->
+<path class="suc" d="M 440 165 Q 380 165 380 345" fill="none" stroke="#60a5fa" stroke-width="3" marker-end="url(#aS)"/>
+<text x="395" y="258" font-family="Space Mono" font-size="7" fill="#60a5fa" transform="rotate(90,395,258)">Succión Skim DN50</text>
+
+<!-- SUCCIÓN: Sumidero → Manifold succión (azul) -->
+<path class="suc" d="M 720 430 Q 720 500 380 340 Q 250 335 220 345" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="8 3" marker-end="url(#aS)" opacity=".8"/>
+<text x="500" y="495" font-family="Space Mono" font-size="7" fill="#60a5fa">Succión Sumidero DN50</text>
+
+<!-- SUCCIÓN: Manifold → Bomba B-01 (azul) -->
+<line class="suc" x1="115" y1="345" x2="115" y2="299" stroke="#60a5fa" stroke-width="3" marker-end="url(#aS)"/>
+<text x="120" y="322" font-family="Space Mono" font-size="7" fill="#60a5fa">DN50</text>
+
+<!-- IMPULSIÓN: Bomba B-01 → Filtro (verde-azulado) -->
+<line class="imp" x1="180" y1="267" x2="240" y2="267" stroke="#5eead4" stroke-width="3" marker-end="url(#aI)"/>
+<text x="210" y="260" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#5eead4">DN50</text>
+
+<!-- IMPULSIÓN: Filtro → Manifold impulsión (verde-azulado) -->
+<path class="imp" d="M 317 299 Q 317 320 317 360 Q 317 395 300 395" fill="none" stroke="#5eead4" stroke-width="3" marker-end="url(#aI)"/>
+
+<!-- BYPASS UV/TRATAMIENTO: derivación desde manifold impulsión -->
+<path class="imp" d="M 220 395 Q 220 430 250 490 Q 265 520 292 524" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#aI)" opacity=".7"/>
+<text x="245" y="455" font-family="Space Mono" font-size="7" fill="#fbbf24" transform="rotate(70,245,455)">Bypass Trat.</text>
+
+<!-- IMPULSIÓN: Manifold → Boquillas retorno (verde-azulado) -->
+<path class="imp" d="M 390 395 Q 750 395 1000 295 Q 1040 280 1050 230" fill="none" stroke="#5eead4" stroke-width="3" marker-end="url(#aI)"/>
+<text x="720" y="388" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#5eead4">IMPULSIÓN RETORNO · DN50</text>
+
+<!-- IMPULSIÓN: Bomba B-02 → Cañón NCC (azul cian) -->
+<path class="imp" d="M 180 525 Q 900 525 1000 340 Q 1040 315 1050 310" fill="none" stroke="#22d3ee" stroke-width="2.5" marker-end="url(#aI)"/>
+<text x="600" y="518" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#22d3ee">Impulsión NCC · DN50</text>
+
+<!-- LLENADO: Agua potable → Vaso (azul celeste) -->
+<path class="imp" d="M 810 680 Q 810 120 650 90" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#aL)"/>
+<text x="820" y="400" font-family="Space Mono" font-size="7" fill="#38bdf8" transform="rotate(90,820,400)">Llenado DN25</text>
+
+<!-- VACIADO: Fondo → Arqueta vaciado (naranja) -->
+<path class="drain" d="M 625 460 Q 625 500 625 640 Q 400 680 370 720" fill="none" stroke="#f97316" stroke-width="2.5" marker-end="url(#aD)"/>
+<text x="570" y="560" font-family="Space Mono" font-size="7" fill="#f97316" transform="rotate(90,570,560)">Vaciado DN63</text>
+
+<!-- REBOSE: Vaso → Arqueta rebose (amarillo) -->
+<path class="rebose" d="M 935 165 Q 935 640 630 700" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="8 4" marker-end="url(#aR)"/>
+<text x="945" y="430" font-family="Space Mono" font-size="7" fill="#fbbf24" transform="rotate(90,945,430)">Rebose DN50</text>
+
+<!-- RETROLAVADO: Filtro → Arqueta vaciado (naranja punteado) -->
+<path class="drain" d="M 317 590 Q 317 640 290 680" fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="5 4" opacity=".7" marker-end="url(#aD)"/>
+<text x="290" y="625" font-family="Space Mono" font-size="7" fill="#f97316">Retrolavado DN50</text>
+
+<!-- DRENAJE SALA: suelo → arqueta vaciado -->
+<path class="drain" d="M 1090 760 Q 1090 840 290 760" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 5" opacity=".5" marker-end="url(#aD)"/>
+<text x="700" y="854" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316" opacity=".6">Drenaje sala técnica → Arqueta vaciado</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- VÁLVULAS (representación simplificada) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- VB1: Skimmer -->
+<circle cx="440" cy="210" r="8" fill="#131b2e" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="440" y="214" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#60a5fa">VB1</text>
+<text x="452" y="222" font-family="Space Mono" font-size="6" fill="#64748b">Skim</text>
+
+<!-- VB2: Sumidero (en manifold) -->
+<circle cx="160" cy="345" r="8" fill="#131b2e" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="160" y="349" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#60a5fa">VB2</text>
+<text x="172" y="357" font-family="Space Mono" font-size="6" fill="#64748b">Sum.</text>
+
+<!-- VB3: Vaciado -->
+<circle cx="625" cy="480" r="8" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+<text x="625" y="484" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#f97316">VB3</text>
+<text x="637" y="492" font-family="Space Mono" font-size="6" fill="#64748b">Vac.</text>
+
+<!-- VI1: Boquillas retorno -->
+<circle cx="870" cy="395" r="8" fill="#131b2e" stroke="#5eead4" stroke-width="1.5"/>
+<text x="870" y="399" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#5eead4">VI1</text>
+
+<!-- VI2: NCC -->
+<circle cx="600" cy="525" r="8" fill="#131b2e" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="600" y="529" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#22d3ee">VI2</text>
+
+<!-- Antirretorno llenado -->
+<rect x="800" y="560" width="30" height="14" rx="3" fill="#131b2e" stroke="#38bdf8" stroke-width="1"/>
+<text x="815" y="571" text-anchor="middle" font-family="Space Mono" font-size="5.5" fill="#38bdf8">CHECK</text>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TABLA DIÁMETROS (esquina superior derecha) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<rect x="1100" y="60" width="380" height="390" rx="8" fill="#0c1528" stroke="#1e293b" stroke-width="1.5"/>
+<text x="1290" y="82" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#94a3b8" font-weight="700" letter-spacing="1">TABLA DE DIÁMETROS</text>
+
+<!-- Cabecera -->
+<rect x="1108" y="90" width="362" height="22" rx="4" fill="#131b2e"/>
+<text x="1180" y="104" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#64748b">Tramo</text>
+<text x="1290" y="104" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#64748b">Diám.</text>
+<text x="1390" y="104" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#64748b">Mat.</text>
+
+<!-- Filas -->
+<text x="1118" y="124" font-size="7.5" fill="#5eead4">Impulsión retorno boquillas</text><text x="1290" y="124" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#5eead4">DN50</text><text x="1380" y="124" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="130" x2="1470" y2="130" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="146" font-size="7.5" fill="#5eead4">Manifold impulsión</text><text x="1290" y="146" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#5eead4">DN63</text><text x="1380" y="146" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="152" x2="1470" y2="152" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="168" font-size="7.5" fill="#60a5fa">Succión skimmer</text><text x="1290" y="168" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#60a5fa">DN50</text><text x="1380" y="168" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="174" x2="1470" y2="174" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="190" font-size="7.5" fill="#60a5fa">Succión sumidero</text><text x="1290" y="190" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#60a5fa">DN50</text><text x="1380" y="190" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="196" x2="1470" y2="196" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="212" font-size="7.5" fill="#60a5fa">Manifold succión</text><text x="1290" y="212" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#60a5fa">DN63</text><text x="1380" y="212" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="218" x2="1470" y2="218" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="234" font-size="7.5" fill="#22d3ee">Impulsión NCC</text><text x="1290" y="234" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#22d3ee">DN50</text><text x="1380" y="234" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="240" x2="1470" y2="240" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="256" font-size="7.5" fill="#f97316">Vaciado total vaso</text><text x="1290" y="256" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#f97316">DN63</text><text x="1380" y="256" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="262" x2="1470" y2="262" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="278" font-size="7.5" fill="#f97316">Retrolavado filtro</text><text x="1290" y="278" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#f97316">DN50</text><text x="1380" y="278" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="284" x2="1470" y2="284" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="300" font-size="7.5" fill="#fbbf24">Rebose lateral vaso</text><text x="1290" y="300" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#fbbf24">DN50</text><text x="1380" y="300" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="306" x2="1470" y2="306" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="322" font-size="7.5" fill="#38bdf8">Llenado agua potable</text><text x="1290" y="322" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#38bdf8">DN25</text><text x="1380" y="322" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="328" x2="1470" y2="328" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="344" font-size="7.5" fill="#94a3b8">Drenaje suelo sala téc.</text><text x="1290" y="344" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#94a3b8">DN63</text><text x="1380" y="344" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="350" x2="1470" y2="350" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="366" font-size="7.5" fill="#94a3b8">Conexión red saneamiento</text><text x="1290" y="366" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#94a3b8">DN160</text><text x="1380" y="366" text-anchor="middle" font-size="7" fill="#64748b">PVC SN8</text>
+<line x1="1108" y1="372" x2="1470" y2="372" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="388" font-size="7.5" fill="#fbbf24">Bypass equipos trat.</text><text x="1290" y="388" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#fbbf24">DN32</text><text x="1380" y="388" text-anchor="middle" font-size="7" fill="#64748b">PVC PN10</text>
+<line x1="1108" y1="394" x2="1470" y2="394" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="410" font-size="7.5" fill="#94a3b8">Acometida cloración / pH</text><text x="1290" y="410" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#94a3b8">DN20</text><text x="1380" y="410" text-anchor="middle" font-size="7" fill="#64748b">C-PVC</text>
+<line x1="1108" y1="416" x2="1470" y2="416" stroke="#1e293b" stroke-width=".5"/>
+<text x="1118" y="432" font-size="7.5" fill="#475569">Colector arqueta saneam.</text><text x="1290" y="432" text-anchor="middle" font-family="Space Mono" font-size="7.5" fill="#475569">DN200</text><text x="1380" y="432" text-anchor="middle" font-size="7" fill="#64748b">PVC SN8</text>
+
+<!-- Línea separadora -->
+<line x1="1108" y1="436" x2="1470" y2="436" stroke="#1e293b" stroke-width="1"/>
+<text x="1118" y="446" font-size="6.5" fill="#334155">* Diám. son nominales. Verificar con instalador. Pendientes ≥ 1% en tramos vaciado/drenaje.</text>
+
+</svg>
+</div>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-line" style="background:#5eead4"></div>Impulsión (agua tratada)</div>
+  <div class="leg-item"><div class="leg-line" style="background:#60a5fa"></div>Succión (agua aspirada)</div>
+  <div class="leg-item"><div class="leg-line" style="background:#f97316"></div>Drenaje / Vaciado</div>
+  <div class="leg-item"><div class="leg-line" style="background:#fbbf24;opacity:.7"></div>Rebose</div>
+  <div class="leg-item"><div class="leg-line" style="background:#38bdf8;opacity:.9"></div>Llenado (agua potable)</div>
+  <div class="leg-item"><div class="leg-line" style="background:#22d3ee;opacity:.8"></div>Contracorriente NCC</div>
+  <div class="leg-item"><div class="leg-line" style="background:#fbbf24;opacity:.5;border-top:2px dashed #fbbf24;background:none"></div>Bypass tratamiento</div>
+</div>
+
+<div class="cards-grid">
+  <div class="det-card" style="border-left-color:#5eead4">
+    <h3 style="color:#5eead4">Circuito Impulsión</h3>
+    <p>El agua filtrada y tratada sale de la bomba B-01 a presión hacia el manifold de impulsión DN63. Desde ahí se distribuye a las boquillas de retorno (orientadas en diagonal para crear circulación laminar en el vaso) y al cañón de contracorriente (B-02 independiente). Velocidad máxima en tubería: 2,5 m/s.</p>
+  </div>
+  <div class="det-card" style="border-left-color:#60a5fa">
+    <h3 style="color:#60a5fa">Circuito Succión</h3>
+    <p>El manifold de succión DN63 reúne los retornos del skimmer (VB1, superficie) y el sumidero (VB2, fondo). Las válvulas de bola permiten regular el porcentaje de caudal de cada fuente. La bomba aspira a través del prefiltro con cesta extraíble para partículas grandes.</p>
+  </div>
+  <div class="det-card" style="border-left-color:#f97316">
+    <h3 style="color:#f97316">Drenaje y Vaciado</h3>
+    <p>La válvula de compuerta VB3 (DN63) permite el vaciado total del vaso por gravedad hacia la arqueta de vaciado. El retrolavado del filtro (válvula 6 vías, posición "backwash") también descarga a esta arqueta. Pendiente mínima de tuberías de drenaje: 1%. Arqueta con sifón anti-olores.</p>
+  </div>
+  <div class="det-card" style="border-left-color:#fbbf24">
+    <h3 style="color:#fbbf24">Rebose y Nivel</h3>
+    <p>El rebose lateral actúa a NML + 30mm para prevenir desbordamiento por lluvia o uso intensivo. El agua de rebose va a arqueta separada (no mezclar con drenaje contaminado). El nivel se mantiene mediante grifo de llenado automático con piloto de nivel (conexión agua potable DN25).</p>
+  </div>
+  <div class="det-card" style="border-left-color:#38bdf8">
+    <h3 style="color:#38bdf8">Llenado — Agua Potable</h3>
+    <p>Conexión DN25 desde red municipal. Siempre con válvula de corte y válvula antirretorno obligatoria (impide contaminación de la red con agua tratada con cloro). El primer llenado requiere ~33.500 litros. La evaporación anual exige reposición periódica del 15–30% del volumen según climatología.</p>
+  </div>
+  <div class="det-card" style="border-left-color:#C9A84C">
+    <h3 style="color:#C9A84C">Conexión a Calle / Red</h3>
+    <p>El agua de vaciado puede contener cloro residual (≤ 1 ppm). Antes de conectar a la red de saneamiento o pluviales, consultar con el gestor de la red local sobre la necesidad de dilución o neutralización previa. En algunos municipios se requiere declaración previa de vertido. La arqueta permite inspección y control del caudal.</p>
+  </div>
+</div>
+
+</body>
+</html>

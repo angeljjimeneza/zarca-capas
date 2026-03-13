@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esquema Eléctrico – Sala de Máquinas Piscina</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e1a;
+    color: #e0e4ef;
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #facc15;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .schema-container {
+    width: 100%;
+    max-width: 1200px;
+    background: #0f1629;
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .schema-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(circle at 15% 15%, rgba(250, 204, 21, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(239, 68, 68, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    min-width: 1100px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+    justify-content: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .legend-color {
+    width: 28px;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .notes {
+    margin-top: 28px;
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .note-card {
+    background: #131b2e;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 18px 20px;
+    border-left: 3px solid;
+  }
+
+  .note-card h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .note-card p {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #94a3b8;
+  }
+
+  .note-card.supply { border-left-color: #facc15; }
+  .note-card.supply h3 { color: #facc15; }
+  .note-card.protect { border-left-color: #ef4444; }
+  .note-card.protect h3 { color: #ef4444; }
+  .note-card.control { border-left-color: #38bdf8; }
+  .note-card.control h3 { color: #38bdf8; }
+  .note-card.safety { border-left-color: #34d399; }
+  .note-card.safety h3 { color: #34d399; }
+  .note-card.sensors { border-left-color: #a78bfa; }
+  .note-card.sensors h3 { color: #a78bfa; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .blink { animation: blink 2s ease-in-out infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  .pulse { animation: pulse 2.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<h1>Esquema Eléctrico – Sala de Máquinas</h1>
+<p class="subtitle">Cuadro de fuerza y maniobra · Protecciones · Sensores · Control automático</p>
+
+<div class="schema-container">
+<svg viewBox="0 0 1300 920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowYellow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Símbolo tierra -->
+    <symbol id="ground" viewBox="0 0 20 16">
+      <line x1="10" y1="0" x2="10" y2="6" stroke="#34d399" stroke-width="1.5"/>
+      <line x1="3" y1="6" x2="17" y2="6" stroke="#34d399" stroke-width="1.5"/>
+      <line x1="5" y1="9" x2="15" y2="9" stroke="#34d399" stroke-width="1.2"/>
+      <line x1="7" y1="12" x2="13" y2="12" stroke="#34d399" stroke-width="1"/>
+    </symbol>
+    <!-- Símbolo motor -->
+    <symbol id="motor" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="16" fill="#131b2e" stroke="currentColor" stroke-width="2"/>
+      <text x="18" y="23" text-anchor="middle" fill="currentColor" font-family="Space Mono, monospace" font-size="14" font-weight="700">M</text>
+    </symbol>
+  </defs>
+
+  <!-- ================================================================ -->
+  <!-- ACOMETIDA GENERAL -->
+  <!-- ================================================================ -->
+  
+  <!-- Líneas de fase desde arriba -->
+  <text x="560" y="22" text-anchor="middle" fill="#facc15" font-family="Space Mono, monospace" font-size="12" font-weight="700">ACOMETIDA GENERAL</text>
+  <text x="560" y="36" text-anchor="middle" fill="#64748b" font-size="9">230V / 400V Trifásica + Neutro + Tierra</text>
+
+  <!-- Barras de fase -->
+  <line x1="420" y1="50" x2="420" y2="80" stroke="#ef4444" stroke-width="3"/>
+  <line x1="490" y1="50" x2="490" y2="80" stroke="#facc15" stroke-width="3"/>
+  <line x1="560" y1="50" x2="560" y2="80" stroke="#38bdf8" stroke-width="3"/>
+  <line x1="630" y1="50" x2="630" y2="80" stroke="#94a3b8" stroke-width="2"/>
+  <line x1="700" y1="50" x2="700" y2="80" stroke="#34d399" stroke-width="2" stroke-dasharray="6 3"/>
+
+  <text x="420" y="48" text-anchor="middle" fill="#ef4444" font-size="10" font-family="Space Mono, monospace" font-weight="700">L1</text>
+  <text x="490" y="48" text-anchor="middle" fill="#facc15" font-size="10" font-family="Space Mono, monospace" font-weight="700">L2</text>
+  <text x="560" y="48" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="Space Mono, monospace" font-weight="700">L3</text>
+  <text x="630" y="48" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Space Mono, monospace" font-weight="700">N</text>
+  <text x="700" y="48" text-anchor="middle" fill="#34d399" font-size="10" font-family="Space Mono, monospace" font-weight="700">PE</text>
+
+  <!-- ================================================================ -->
+  <!-- INTERRUPTOR GENERAL MAGNETOTÉRMICO (IGA) -->
+  <!-- ================================================================ -->
+  <rect x="395" y="80" width="260" height="50" rx="6" fill="#1a1030" stroke="#facc15" stroke-width="2" filter="url(#glow)"/>
+  <text x="525" y="102" text-anchor="middle" fill="#facc15" font-family="Space Mono, monospace" font-size="11" font-weight="700">IGA – Interruptor General 4P 40A</text>
+  <text x="525" y="118" text-anchor="middle" fill="#64748b" font-size="8">Curva C · Poder de corte 6kA</text>
+  <!-- Símbolo interruptor en cada fase -->
+  <g>
+    <line x1="412" y1="88" x2="412" y2="96" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="412" y1="96" x2="418" y2="88" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="432" y1="88" x2="432" y2="96" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="432" y1="96" x2="438" y2="88" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="452" y1="88" x2="452" y2="96" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="452" y1="96" x2="458" y2="88" stroke="#facc15" stroke-width="1.5"/>
+  </g>
+
+  <!-- Barras salida IGA -->
+  <line x1="420" y1="130" x2="420" y2="165" stroke="#ef4444" stroke-width="2.5"/>
+  <line x1="490" y1="130" x2="490" y2="165" stroke="#facc15" stroke-width="2.5"/>
+  <line x1="560" y1="130" x2="560" y2="165" stroke="#38bdf8" stroke-width="2.5"/>
+  <line x1="630" y1="130" x2="630" y2="165" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="700" y1="80" x2="700" y2="165" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+  <!-- ================================================================ -->
+  <!-- INTERRUPTOR DIFERENCIAL (ID) -->
+  <!-- ================================================================ -->
+  <rect x="395" y="165" width="260" height="45" rx="6" fill="#1a1030" stroke="#ef4444" stroke-width="2" filter="url(#glow)"/>
+  <text x="525" y="185" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="11" font-weight="700">ID – Diferencial 4P 40A / 30mA</text>
+  <text x="525" y="199" text-anchor="middle" fill="#64748b" font-size="8">Clase A · Protección contactos directos e indirectos</text>
+
+  <!-- Barras salida diferencial → distribución horizontal -->
+  <line x1="420" y1="210" x2="420" y2="260" stroke="#ef4444" stroke-width="2"/>
+  <line x1="490" y1="210" x2="490" y2="260" stroke="#facc15" stroke-width="2"/>
+  <line x1="560" y1="210" x2="560" y2="260" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="630" y1="210" x2="630" y2="260" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="700" y1="165" x2="700" y2="260" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+  <!-- ================================================================ -->
+  <!-- BARRA DE DISTRIBUCIÓN HORIZONTAL -->
+  <!-- ================================================================ -->
+  <line x1="60" y1="260" x2="1240" y2="260" stroke="#475569" stroke-width="1" stroke-dasharray="2 2"/>
+  <rect x="430" y="250" width="200" height="20" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="530" y="264" text-anchor="middle" fill="#94a3b8" font-family="Space Mono, monospace" font-size="9" font-weight="700">BARRA DE DISTRIBUCIÓN</text>
+
+  <!-- Conexiones verticales desde barra hacia cada circuito -->
+  
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 1: BOMBA DE FILTRACIÓN (Trifásica) -->
+  <!-- ================================================================ -->
+  
+  <!-- Líneas descendentes desde barra -->
+  <line x1="100" y1="260" x2="100" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="115" y1="260" x2="115" y2="310" stroke="#facc15" stroke-width="2"/>
+  <line x1="130" y1="260" x2="130" y2="310" stroke="#38bdf8" stroke-width="2"/>
+  
+  <!-- Magnetotérmico C1 -->
+  <rect x="75" y="310" width="80" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="115" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C1</text>
+  <text x="115" y="342" text-anchor="middle" fill="#64748b" font-size="7">3P · 16A · C</text>
+
+  <!-- Líneas a contactor -->
+  <line x1="100" y1="350" x2="100" y2="390" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="115" y1="350" x2="115" y2="390" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="130" y1="350" x2="130" y2="390" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Contactor KM1 -->
+  <rect x="75" y="390" width="80" height="40" rx="5" fill="#131b2e" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="115" y="408" text-anchor="middle" fill="#38bdf8" font-family="Space Mono, monospace" font-size="8" font-weight="700">KM1</text>
+  <text x="115" y="420" text-anchor="middle" fill="#64748b" font-size="7">Contactor</text>
+
+  <!-- Líneas a relé térmico -->
+  <line x1="100" y1="430" x2="100" y2="465" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="115" y1="430" x2="115" y2="465" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="130" y1="430" x2="130" y2="465" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Relé térmico -->
+  <rect x="75" y="465" width="80" height="35" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+  <text x="115" y="480" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="8" font-weight="700">RT1</text>
+  <text x="115" y="492" text-anchor="middle" fill="#64748b" font-size="7">9–14A</text>
+
+  <!-- Líneas a motor -->
+  <line x1="100" y1="500" x2="100" y2="540" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="115" y1="500" x2="115" y2="540" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="130" y1="500" x2="130" y2="540" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Motor bomba -->
+  <circle cx="115" cy="565" r="22" fill="#131b2e" stroke="#38bdf8" stroke-width="2.5" filter="url(#glow)"/>
+  <text x="115" y="571" text-anchor="middle" fill="#38bdf8" font-family="Space Mono, monospace" font-size="16" font-weight="700">M</text>
+  
+  <!-- Tierra motor -->
+  <line x1="137" y1="565" x2="160" y2="565" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="150" y="560" width="20" height="16"/>
+
+  <text x="115" y="605" text-anchor="middle" fill="#7dd3fc" font-family="Space Mono, monospace" font-size="10" font-weight="700">BOMBA</text>
+  <text x="115" y="618" text-anchor="middle" fill="#64748b" font-size="8">1.5 kW · 3~ · 400V</text>
+  <text x="115" y="630" text-anchor="middle" fill="#64748b" font-size="7">Cable: 5×2.5mm² NYM</text>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 2: BOMBA DE CALOR (Trifásica) -->
+  <!-- ================================================================ -->
+  
+  <line x1="290" y1="260" x2="290" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="305" y1="260" x2="305" y2="310" stroke="#facc15" stroke-width="2"/>
+  <line x1="320" y1="260" x2="320" y2="310" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Magnetotérmico C2 -->
+  <rect x="265" y="310" width="80" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="305" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C2</text>
+  <text x="305" y="342" text-anchor="middle" fill="#64748b" font-size="7">3P · 20A · C</text>
+
+  <line x1="290" y1="350" x2="290" y2="390" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="305" y1="350" x2="305" y2="390" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="320" y1="350" x2="320" y2="390" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Contactor KM2 -->
+  <rect x="265" y="390" width="80" height="40" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+  <text x="305" y="408" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="8" font-weight="700">KM2</text>
+  <text x="305" y="420" text-anchor="middle" fill="#64748b" font-size="7">Contactor</text>
+
+  <line x1="290" y1="430" x2="290" y2="465" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="305" y1="430" x2="305" y2="465" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="320" y1="430" x2="320" y2="465" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Relé térmico RT2 -->
+  <rect x="265" y="465" width="80" height="35" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+  <text x="305" y="480" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="8" font-weight="700">RT2</text>
+  <text x="305" y="492" text-anchor="middle" fill="#64748b" font-size="7">12–18A</text>
+
+  <line x1="290" y1="500" x2="290" y2="540" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="305" y1="500" x2="305" y2="540" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="320" y1="500" x2="320" y2="540" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Motor bomba de calor -->
+  <circle cx="305" cy="565" r="22" fill="#131b2e" stroke="#f97316" stroke-width="2.5" filter="url(#glow)"/>
+  <text x="305" y="571" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="16" font-weight="700">M</text>
+
+  <line x1="327" y1="565" x2="350" y2="565" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="340" y="560" width="20" height="16"/>
+
+  <text x="305" y="605" text-anchor="middle" fill="#fb923c" font-family="Space Mono, monospace" font-size="10" font-weight="700">BOMBA CALOR</text>
+  <text x="305" y="618" text-anchor="middle" fill="#64748b" font-size="8">3.0 kW · 3~ · 400V</text>
+  <text x="305" y="630" text-anchor="middle" fill="#64748b" font-size="7">Cable: 5×4mm² NYM</text>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 3: ESTERILIZADOR UV (Monofásico) -->
+  <!-- ================================================================ -->
+  
+  <line x1="480" y1="260" x2="480" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="500" y1="260" x2="500" y2="310" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Magnetotérmico C3 -->
+  <rect x="460" y="310" width="60" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="490" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C3</text>
+  <text x="490" y="342" text-anchor="middle" fill="#64748b" font-size="7">2P · 6A · C</text>
+
+  <line x1="480" y1="350" x2="480" y2="400" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="500" y1="350" x2="500" y2="400" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Balasto UV -->
+  <rect x="460" y="400" width="60" height="45" rx="5" fill="#131b2e" stroke="#a78bfa" stroke-width="2"/>
+  <text x="490" y="418" text-anchor="middle" fill="#a78bfa" font-family="Space Mono, monospace" font-size="8" font-weight="700">BALASTO</text>
+  <text x="490" y="432" text-anchor="middle" fill="#64748b" font-size="7">UV</text>
+
+  <line x1="490" y1="445" x2="490" y2="480" stroke="#a78bfa" stroke-width="1.5"/>
+
+  <!-- Lámpara UV - símbolo -->
+  <rect x="470" y="480" width="40" height="50" rx="20" fill="#131b2e" stroke="#a78bfa" stroke-width="2.5" filter="url(#glow)"/>
+  <!-- Rayos UV -->
+  <line x1="480" y1="492" x2="480" y2="518" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+  <line x1="490" y1="490" x2="490" y2="520" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+  <line x1="500" y1="492" x2="500" y2="518" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+  <circle cx="490" cy="505" r="5" fill="#a78bfa" opacity="0.3" class="pulse"/>
+
+  <line x1="510" y1="505" x2="535" y2="505" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="525" y="500" width="20" height="16"/>
+
+  <text x="490" y="548" text-anchor="middle" fill="#c4b5fd" font-family="Space Mono, monospace" font-size="10" font-weight="700">UV</text>
+  <text x="490" y="561" text-anchor="middle" fill="#64748b" font-size="8">55W · 1~ · 230V</text>
+  <text x="490" y="573" text-anchor="middle" fill="#64748b" font-size="7">Cable: 3×1.5mm² NYM</text>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 4: BOMBA DOSIFICADORA pH (Monofásico) -->
+  <!-- ================================================================ -->
+  
+  <line x1="630" y1="260" x2="630" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="650" y1="260" x2="650" y2="310" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Magnetotérmico C4 -->
+  <rect x="610" y="310" width="60" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="640" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C4</text>
+  <text x="640" y="342" text-anchor="middle" fill="#64748b" font-size="7">2P · 6A · C</text>
+
+  <line x1="630" y1="350" x2="630" y2="400" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="650" y1="350" x2="650" y2="400" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Controlador pH -->
+  <rect x="608" y="400" width="65" height="50" rx="5" fill="#131b2e" stroke="#34d399" stroke-width="2" filter="url(#glow)"/>
+  <text x="640" y="418" text-anchor="middle" fill="#34d399" font-family="Space Mono, monospace" font-size="8" font-weight="700">CTRL</text>
+  <text x="640" y="432" text-anchor="middle" fill="#34d399" font-size="8">pH</text>
+  <!-- Display -->
+  <rect x="620" y="436" width="40" height="8" rx="2" fill="#0a2e1a" stroke="#34d399" stroke-width="0.5"/>
+  <text x="640" y="443" text-anchor="middle" fill="#34d399" font-size="6" class="blink">7.2</text>
+
+  <!-- Línea a sonda pH -->
+  <line x1="673" y1="425" x2="720" y2="425" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <rect x="720" y="410" width="35" height="30" rx="4" fill="#131b2e" stroke="#a78bfa" stroke-width="1.5"/>
+  <line x1="737" y1="418" x2="737" y2="434" stroke="#a78bfa" stroke-width="1.5"/>
+  <circle cx="737" cy="434" r="2.5" fill="#a78bfa" opacity="0.6" class="pulse"/>
+  <text x="737" y="455" text-anchor="middle" fill="#c4b5fd" font-family="Space Mono, monospace" font-size="8">SONDA pH</text>
+  <text x="737" y="465" text-anchor="middle" fill="#64748b" font-size="7">4–20mA</text>
+
+  <!-- Línea a bomba peristáltica -->
+  <line x1="640" y1="450" x2="640" y2="490" stroke="#34d399" stroke-width="1.5"/>
+
+  <!-- Bomba peristáltica -->
+  <circle cx="640" cy="515" r="22" fill="#131b2e" stroke="#34d399" stroke-width="2.5" filter="url(#glow)"/>
+  <text x="640" y="521" text-anchor="middle" fill="#34d399" font-family="Space Mono, monospace" font-size="14" font-weight="700">P</text>
+
+  <line x1="662" y1="515" x2="685" y2="515" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="675" y="510" width="20" height="16"/>
+
+  <text x="640" y="553" text-anchor="middle" fill="#6ee7b7" font-family="Space Mono, monospace" font-size="10" font-weight="700">BOMBA pH</text>
+  <text x="640" y="566" text-anchor="middle" fill="#64748b" font-size="8">Peristáltica · 1~ · 230V</text>
+  <text x="640" y="578" text-anchor="middle" fill="#64748b" font-size="7">Cable: 3×1.5mm² NYM</text>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 5: CUADRO DE CONTROL / AUTÓMATA -->
+  <!-- ================================================================ -->
+  
+  <line x1="840" y1="260" x2="840" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="860" y1="260" x2="860" y2="310" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Magnetotérmico C5 -->
+  <rect x="820" y="310" width="60" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="850" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C5</text>
+  <text x="850" y="342" text-anchor="middle" fill="#64748b" font-size="7">2P · 10A · C</text>
+
+  <line x1="840" y1="350" x2="840" y2="390" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="860" y1="350" x2="860" y2="390" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Cuadro de control -->
+  <rect x="800" y="390" width="100" height="110" rx="8" fill="#131b2e" stroke="#38bdf8" stroke-width="2" filter="url(#glow)"/>
+  <text x="850" y="412" text-anchor="middle" fill="#38bdf8" font-family="Space Mono, monospace" font-size="9" font-weight="700">CUADRO</text>
+  <text x="850" y="425" text-anchor="middle" fill="#38bdf8" font-family="Space Mono, monospace" font-size="9" font-weight="700">CONTROL</text>
+  
+  <!-- Indicadores LED -->
+  <circle cx="820" cy="445" r="4" fill="#34d399" class="blink"/>
+  <text x="832" y="448" fill="#64748b" font-size="7">ON</text>
+  <circle cx="820" cy="458" r="4" fill="#38bdf8" class="pulse"/>
+  <text x="832" y="461" fill="#64748b" font-size="7">BOMBA</text>
+  <circle cx="820" cy="471" r="4" fill="#f97316" opacity="0.4"/>
+  <text x="832" y="474" fill="#64748b" font-size="7">CALOR</text>
+  <circle cx="820" cy="484" r="4" fill="#a78bfa" opacity="0.4"/>
+  <text x="832" y="487" fill="#64748b" font-size="7">UV</text>
+  <circle cx="880" cy="445" r="4" fill="#fb7185" opacity="0.4"/>
+  <text x="892" y="448" fill="#64748b" font-size="7">NCC</text>
+
+  <!-- Líneas de control a contactores (punteadas) -->
+  <!-- Control KM1 (Bomba) -->
+  <line x1="800" y1="458" x2="155" y2="458" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <line x1="155" y1="458" x2="155" y2="410" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <circle cx="155" cy="410" r="3" fill="#38bdf8" opacity="0.5"/>
+
+  <!-- Control KM2 (Bomba Calor) -->
+  <line x1="800" y1="471" x2="345" y2="471" stroke="#f97316" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <line x1="345" y1="471" x2="345" y2="410" stroke="#f97316" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <circle cx="345" cy="410" r="3" fill="#f97316" opacity="0.5"/>
+
+  <!-- Control Balasto UV -->
+  <line x1="800" y1="484" x2="520" y2="484" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <line x1="520" y1="484" x2="520" y2="420" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+  <circle cx="520" cy="420" r="3" fill="#a78bfa" opacity="0.5"/>
+
+  <text x="850" y="515" text-anchor="middle" fill="#7dd3fc" font-family="Space Mono, monospace" font-size="9" font-weight="700">AUTÓMATA</text>
+  <text x="850" y="528" text-anchor="middle" fill="#64748b" font-size="7">Temporizador + Control</text>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 6: ALUMBRADO SALA (Monofásico) -->
+  <!-- ================================================================ -->
+  
+  <line x1="1000" y1="260" x2="1000" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="1020" y1="260" x2="1020" y2="310" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Magnetotérmico C6 -->
+  <rect x="980" y="310" width="60" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="1010" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C6</text>
+  <text x="1010" y="342" text-anchor="middle" fill="#64748b" font-size="7">2P · 10A · C</text>
+
+  <line x1="1010" y1="350" x2="1010" y2="395" stroke="#ef4444" stroke-width="1.5"/>
+
+  <!-- Luminaria -->
+  <circle cx="1010" cy="415" r="18" fill="#131b2e" stroke="#facc15" stroke-width="2" filter="url(#glow)"/>
+  <line x1="998" y1="407" x2="1022" y2="423" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="998" y1="423" x2="1022" y2="407" stroke="#facc15" stroke-width="1.5"/>
+
+  <line x1="1028" y1="415" x2="1050" y2="415" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="1040" y="410" width="20" height="16"/>
+
+  <text x="1010" y="450" text-anchor="middle" fill="#fde68a" font-family="Space Mono, monospace" font-size="10" font-weight="700">ALUMBRADO</text>
+  <text x="1010" y="463" text-anchor="middle" fill="#64748b" font-size="8">LED · 1~ · 230V</text>
+  <text x="1010" y="475" text-anchor="middle" fill="#64748b" font-size="7">Cable: 3×1.5mm² NYM</text>
+
+  <!-- ================================================================ -->
+  <!-- SENSORES ADICIONALES -->
+  <!-- ================================================================ -->
+
+  <!-- Sensor temperatura agua -->
+  <rect x="810" y="555" width="80" height="35" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+  <text x="850" y="570" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="8" font-weight="700">SONDA T°</text>
+  <text x="850" y="583" text-anchor="middle" fill="#64748b" font-size="7">PT1000 / NTC</text>
+  <line x1="850" y1="555" x2="850" y2="500" stroke="#f97316" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+
+  <!-- Presostato -->
+  <rect x="920" y="555" width="80" height="35" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="960" y="570" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">PRESOSTATO</text>
+  <text x="960" y="583" text-anchor="middle" fill="#64748b" font-size="7">Flujo mínimo</text>
+  <line x1="960" y1="555" x2="960" y2="500" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+  <line x1="960" y1="500" x2="900" y2="500" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+
+  <!-- ================================================================ -->
+  <!-- CIRCUITO 7: NADO CONTRACORRIENTE (Trifásico + Termoprotector) -->
+  <!-- ================================================================ -->
+  
+  <!-- Líneas descendentes desde barra -->
+  <line x1="1130" y1="260" x2="1130" y2="310" stroke="#ef4444" stroke-width="2"/>
+  <line x1="1145" y1="260" x2="1145" y2="310" stroke="#facc15" stroke-width="2"/>
+  <line x1="1160" y1="260" x2="1160" y2="310" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Magnetotérmico C7 -->
+  <rect x="1105" y="310" width="80" height="40" rx="5" fill="#131b2e" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="1145" y="328" text-anchor="middle" fill="#ef4444" font-family="Space Mono, monospace" font-size="8" font-weight="700">MAG C7</text>
+  <text x="1145" y="342" text-anchor="middle" fill="#64748b" font-size="7">3P · 25A · C</text>
+
+  <!-- Líneas a contactor -->
+  <line x1="1130" y1="350" x2="1130" y2="390" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1145" y1="350" x2="1145" y2="390" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="1160" y1="350" x2="1160" y2="390" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Contactor KM3 -->
+  <rect x="1105" y="390" width="80" height="40" rx="5" fill="#131b2e" stroke="#fb7185" stroke-width="1.5"/>
+  <text x="1145" y="408" text-anchor="middle" fill="#fb7185" font-family="Space Mono, monospace" font-size="8" font-weight="700">KM3</text>
+  <text x="1145" y="420" text-anchor="middle" fill="#64748b" font-size="7">Contactor</text>
+
+  <!-- Líneas a relé térmico -->
+  <line x1="1130" y1="430" x2="1130" y2="465" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1145" y1="430" x2="1145" y2="465" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="1160" y1="430" x2="1160" y2="465" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Relé térmico RT3 -->
+  <rect x="1105" y="465" width="80" height="35" rx="5" fill="#131b2e" stroke="#f97316" stroke-width="1.5"/>
+  <text x="1145" y="480" text-anchor="middle" fill="#f97316" font-family="Space Mono, monospace" font-size="8" font-weight="700">RT3</text>
+  <text x="1145" y="492" text-anchor="middle" fill="#64748b" font-size="7">16–22A</text>
+
+  <!-- Líneas a termoprotector -->
+  <line x1="1130" y1="500" x2="1130" y2="530" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1145" y1="500" x2="1145" y2="530" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="1160" y1="500" x2="1160" y2="530" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- ★ TERMOPROTECTOR (PTC/Klixon) ★ -->
+  <rect x="1098" y="530" width="94" height="55" rx="6" fill="#1a0a0a" stroke="#ef4444" stroke-width="2.5" filter="url(#glow)"/>
+  <!-- Símbolo termostato: contacto con arco de temperatura -->
+  <line x1="1120" y1="550" x2="1130" y2="550" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1130" y1="550" x2="1138" y2="542" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1140" y1="550" x2="1170" y2="550" stroke="#ef4444" stroke-width="1.5"/>
+  <!-- Símbolo θ (theta) para temperatura -->
+  <circle cx="1134" cy="542" r="5" fill="none" stroke="#ef4444" stroke-width="1"/>
+  <text x="1134" y="545" text-anchor="middle" fill="#ef4444" font-size="6" font-family="Space Mono, monospace">θ</text>
+  <!-- Ondas de calor -->
+  <path d="M1118,565 Q1122,560 1126,565" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+  <path d="M1130,565 Q1134,560 1138,565" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+  <path d="M1142,565 Q1146,560 1150,565" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+  <path d="M1154,565 Q1158,560 1162,565" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+  <!-- Indicador de corte -->
+  <circle cx="1175" cy="557" r="5" fill="#ef4444" opacity="0.3" class="pulse"/>
+  
+  <text x="1145" y="577" text-anchor="middle" fill="#fca5a5" font-family="Space Mono, monospace" font-size="7" font-weight="700">TERMOPROTECTOR</text>
+  
+  <!-- Etiqueta lateral detalle -->
+  <line x1="1192" y1="545" x2="1230" y2="545" stroke="#ef4444" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/>
+  <text x="1233" y="541" fill="#fca5a5" font-size="7" font-family="Space Mono, monospace">PTC integrado</text>
+  <text x="1233" y="551" fill="#fca5a5" font-size="7" font-family="Space Mono, monospace">en bobinado</text>
+  <text x="1233" y="561" fill="#64748b" font-size="6" font-family="DM Sans">Corte: 135°C</text>
+  <text x="1233" y="571" fill="#64748b" font-size="6" font-family="DM Sans">Reset: 85°C</text>
+
+  <!-- Línea termoprotector → señal a bobina KM3 (corte por sobretemperatura) -->
+  <line x1="1098" y1="557" x2="1070" y2="557" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>
+  <line x1="1070" y1="557" x2="1070" y2="410" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>
+  <line x1="1070" y1="410" x2="1105" y2="410" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>
+  <circle cx="1105" cy="410" r="3" fill="#ef4444" opacity="0.6"/>
+  <text x="1060" y="490" fill="#fca5a5" font-size="6" font-family="DM Sans" text-anchor="end" transform="rotate(-90, 1060, 490)">Señal corte θ</text>
+
+  <!-- Líneas a motor -->
+  <line x1="1130" y1="585" x2="1130" y2="615" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="1145" y1="585" x2="1145" y2="615" stroke="#facc15" stroke-width="1.5"/>
+  <line x1="1160" y1="585" x2="1160" y2="615" stroke="#38bdf8" stroke-width="1.5"/>
+
+  <!-- Motor nado contracorriente -->
+  <circle cx="1145" cy="640" r="24" fill="#131b2e" stroke="#fb7185" stroke-width="2.5" filter="url(#glow)"/>
+  <text x="1145" y="646" text-anchor="middle" fill="#fb7185" font-family="Space Mono, monospace" font-size="16" font-weight="700">M</text>
+  <!-- Símbolo turbina/agua -->
+  <path d="M1145,625 Q1150,630 1145,635" fill="none" stroke="#fb7185" stroke-width="1" opacity="0.5"/>
+  <path d="M1140,625 Q1135,630 1140,635" fill="none" stroke="#fb7185" stroke-width="1" opacity="0.5"/>
+
+  <!-- Tierra motor -->
+  <line x1="1169" y1="640" x2="1195" y2="640" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <use href="#ground" x="1185" y="635" width="20" height="16"/>
+
+  <text x="1145" y="680" text-anchor="middle" fill="#fb7185" font-family="Space Mono, monospace" font-size="10" font-weight="700">NADO</text>
+  <text x="1145" y="693" text-anchor="middle" fill="#fb7185" font-family="Space Mono, monospace" font-size="10" font-weight="700">CONTRACORRIENTE</text>
+  <text x="1145" y="706" text-anchor="middle" fill="#64748b" font-size="8">3.5 kW · 3~ · 400V</text>
+  <text x="1145" y="718" text-anchor="middle" fill="#64748b" font-size="7">Cable: 5×4mm² NYM</text>
+
+  <!-- Pulsador exterior (borde piscina) -->
+  <rect x="1205" y="390" width="70" height="45" rx="6" fill="#131b2e" stroke="#fb7185" stroke-width="1.5"/>
+  <circle cx="1240" cy="405" r="8" fill="#1a0a0a" stroke="#fb7185" stroke-width="1.5"/>
+  <circle cx="1240" cy="405" r="4" fill="#fb7185" opacity="0.4" class="pulse"/>
+  <text x="1240" y="428" text-anchor="middle" fill="#fb7185" font-family="Space Mono, monospace" font-size="7" font-weight="700">PULSADOR</text>
+  <text x="1240" y="438" text-anchor="middle" fill="#64748b" font-size="6">Borde piscina</text>
+  <text x="1240" y="448" text-anchor="middle" fill="#64748b" font-size="6">IP65 · Neumático</text>
+  <!-- Línea pulsador a contactor -->
+  <line x1="1205" y1="410" x2="1185" y2="410" stroke="#fb7185" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+
+  <!-- Línea de control desde cuadro de control -->
+  <line x1="900" y1="495" x2="1105" y2="495" stroke="#fb7185" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <line x1="1105" y1="495" x2="1105" y2="430" stroke="#fb7185" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <!-- LED en cuadro de control para contracorriente -->
+
+  <!-- Etiqueta circuito 7 -->
+  <rect x="1095" y="725" width="110" height="18" rx="9" fill="#fb7185" opacity="0.1"/>
+  <text x="1150" y="738" text-anchor="middle" fill="#fb7185" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 7</text>
+
+  <!-- Tierra circuito 7 a barra -->
+  <line x1="1195" y1="650" x2="1195" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+
+  <!-- ================================================================ -->
+  <!-- ETIQUETAS DE CIRCUITOS -->
+  <!-- ================================================================ -->
+  <rect x="65" y="640" width="110" height="18" rx="9" fill="#38bdf8" opacity="0.1"/>
+  <text x="120" y="653" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 1</text>
+
+  <rect x="255" y="640" width="110" height="18" rx="9" fill="#f97316" opacity="0.1"/>
+  <text x="310" y="653" text-anchor="middle" fill="#f97316" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 2</text>
+
+  <rect x="440" y="583" width="110" height="18" rx="9" fill="#a78bfa" opacity="0.1"/>
+  <text x="495" y="596" text-anchor="middle" fill="#a78bfa" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 3</text>
+
+  <rect x="590" y="588" width="110" height="18" rx="9" fill="#34d399" opacity="0.1"/>
+  <text x="645" y="601" text-anchor="middle" fill="#34d399" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 4</text>
+
+  <rect x="800" y="538" width="110" height="18" rx="9" fill="#38bdf8" opacity="0.1"/>
+  <text x="855" y="551" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 5</text>
+
+  <rect x="960" y="483" width="110" height="18" rx="9" fill="#facc15" opacity="0.1"/>
+  <text x="1015" y="496" text-anchor="middle" fill="#facc15" font-size="8" font-family="Space Mono, monospace" font-weight="700">CIRCUITO 6</text>
+
+  <!-- ================================================================ -->
+  <!-- BARRA DE TIERRA GENERAL -->
+  <!-- ================================================================ -->
+  <line x1="60" y1="680" x2="1240" y2="680" stroke="#34d399" stroke-width="2" stroke-dasharray="8 4"/>
+  <rect x="430" y="670" width="200" height="20" rx="4" fill="#0a2e1a" stroke="#34d399" stroke-width="1"/>
+  <text x="530" y="684" text-anchor="middle" fill="#34d399" font-family="Space Mono, monospace" font-size="9" font-weight="700">BARRA EQUIPOTENCIAL PE</text>
+  <use href="#ground" x="350" y="672" width="20" height="16"/>
+  <use href="#ground" x="650" y="672" width="20" height="16"/>
+
+  <!-- Conexiones de tierra a la barra -->
+  <line x1="160" y1="575" x2="160" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <line x1="350" y1="575" x2="350" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <line x1="535" y1="515" x2="535" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <line x1="685" y1="525" x2="685" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+  <line x1="1050" y1="425" x2="1050" y2="680" stroke="#34d399" stroke-width="1" stroke-dasharray="4 2" opacity="0.4"/>
+
+</svg>
+</div>
+
+<!-- Leyenda -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-color" style="background: #ef4444;"></div>
+    <span>Fase L1</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #facc15;"></div>
+    <span>Fase L2</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #38bdf8;"></div>
+    <span>Fase L3</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #94a3b8;"></div>
+    <span>Neutro (N)</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #34d399; border-style: dashed;"></div>
+    <span>Tierra (PE)</span>
+  </div>
+  <div class="legend-item">
+    <svg width="28" height="12"><line x1="0" y1="6" x2="28" y2="6" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/></svg>
+    <span>Línea de control/señal</span>
+  </div>
+</div>
+
+<!-- Notas técnicas -->
+<div class="notes">
+  <div class="note-card supply">
+    <h3>Acometida</h3>
+    <p>Alimentación trifásica 400V + N + PE. IGA de 40A tetrapolar con poder de corte 6kA mínimo. Cable de acometida: 5×10mm² según la potencia total instalada (~9 kW con nado contracorriente).</p>
+  </div>
+  <div class="note-card protect">
+    <h3>Protecciones</h3>
+    <p>Diferencial 4P/40A/30mA clase A para protección de personas. Magnetotérmicos individuales por circuito. Relés térmicos (RT1, RT2, RT3) para protección de motores contra sobrecarga.</p>
+  </div>
+  <div class="note-card control">
+    <h3>Cuadro de Control</h3>
+    <p>Autómata o temporizador que gobierna KM1 (bomba), KM2 (calor), KM3 (contracorriente) y el balasto UV. Incluye programación horaria y enclavamiento: la bomba de calor y el UV solo funcionan si la bomba de filtración está activa.</p>
+  </div>
+  <div class="note-card sensors">
+    <h3>Sensores</h3>
+    <p>Sonda pH (4–20 mA) conectada al controlador de dosificación. Sonda de temperatura PT1000/NTC para control de la bomba de calor. Presostato de flujo mínimo como seguridad de arranque.</p>
+  </div>
+  <div class="note-card safety">
+    <h3>Puesta a Tierra</h3>
+    <p>Barra equipotencial PE que conecta todas las masas metálicas: carcasa de motores, cuadro eléctrico, tuberías metálicas y estructura de la sala. Resistencia de tierra ≤ 37Ω (para ID de 30mA).</p>
+  </div>
+  <div class="note-card protect">
+    <h3>Termoprotector NCC</h3>
+    <p>Sonda PTC integrada en el bobinado del motor de nado contracorriente. Corta la alimentación de la bobina del contactor KM3 al alcanzar 135°C, protegiendo contra sobrecalentamiento por uso prolongado o bloqueo del rotor. Rearme automático al descender a 85°C. El pulsador neumático IP65 garantiza seguridad al estar en zona húmeda (borde de piscina).</p>
+  </div>
+</div>
+
+</body>
+</html>

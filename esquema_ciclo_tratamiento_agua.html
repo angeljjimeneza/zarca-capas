@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciclo de Tratamiento del Agua — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#0a0e1a;color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;padding:30px 20px;
+  }
+  h1{
+    font-family:'Space Mono',monospace;font-size:1.3rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#5eead4;margin-bottom:6px;text-align:center;
+  }
+  .subtitle{font-size:.85rem;color:#64748b;margin-bottom:30px;text-align:center;max-width:700px;}
+
+  /* ──── DIAGRAMA FLUJO ──── */
+  .flow-wrap{
+    width:100%;max-width:1100px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:16px;padding:28px;
+    position:relative;overflow:hidden;
+  }
+  .flow-wrap::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 50%,rgba(94,234,212,.03) 0%,transparent 60%);
+    pointer-events:none;
+  }
+
+  /* ──── PARÁMETROS EN TIEMPO REAL ──── */
+  .params-bar{
+    display:flex;gap:0;width:100%;max-width:1100px;
+    margin-bottom:20px;border-radius:12px;overflow:hidden;
+    border:1px solid #1e293b;
+  }
+  .param-item{
+    flex:1;padding:14px 12px;text-align:center;
+    background:#0f1629;border-right:1px solid #1e293b;
+    cursor:pointer;transition:background .3s;
+    position:relative;
+  }
+  .param-item:last-child{border-right:none;}
+  .param-item:hover{background:#131b2e;}
+  .param-label{
+    font-family:'Space Mono',monospace;font-size:.6rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#475569;margin-bottom:6px;
+  }
+  .param-gauge{position:relative;height:6px;background:#1e293b;border-radius:3px;margin:0 8px 6px;}
+  .param-gauge-fill{
+    height:100%;border-radius:3px;
+    transition:width 1.5s ease;width:0%;
+  }
+  .param-value{
+    font-family:'Space Mono',monospace;font-size:1.15rem;
+    font-weight:700;
+  }
+  .param-range{font-size:.65rem;color:#475569;margin-top:2px;}
+  .param-status{
+    position:absolute;top:10px;right:10px;
+    width:8px;height:8px;border-radius:50%;
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .status-ok{background:#4ade80;animation:blink 2s infinite;}
+  .status-warn{background:#fbbf24;animation:blink 1s infinite;}
+
+  /* ──── NODOS DEL CICLO ──── */
+  .cycle-node{cursor:pointer;}
+  .cycle-node:hover .cn-circle{filter:brightness(1.4);}
+  .cycle-node.active .cn-circle{filter:brightness(1.6);}
+  .cycle-node:hover .cn-glow{opacity:.5;}
+  .cycle-node.active .cn-glow{opacity:.7;}
+
+  /* Líneas animadas del flujo */
+  @keyframes flowAnim{
+    0%{stroke-dashoffset:50}100%{stroke-dashoffset:0}
+  }
+  .flow-line{
+    stroke-dasharray:6 3;
+    animation:flowAnim 1.5s linear infinite;
+    opacity:.6;
+  }
+  .flow-line.active-flow{opacity:1;}
+
+  /* Flechas de dirección */
+  .flow-arrow{transition:opacity .3s;}
+
+  /* ──── PANEL DETALLE CICLO ──── */
+  .cycle-detail{
+    width:100%;max-width:1100px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;max-height:0;overflow:hidden;
+    transition:max-height .5s ease,padding .3s;margin-top:12px;
+  }
+  .cycle-detail.open{max-height:450px;padding:24px;}
+
+  .cd-grid{display:flex;gap:24px;flex-wrap:wrap;}
+  .cd-col{flex:1;min-width:240px;}
+  .cd-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:5px 14px;border-radius:20px;
+    font-family:'Space Mono',monospace;font-size:.68rem;
+    font-weight:700;letter-spacing:1px;margin-bottom:12px;
+  }
+  .cd-title{font-weight:700;font-size:1.1rem;margin-bottom:4px;}
+  .cd-sub{font-size:.82rem;color:#64748b;margin-bottom:14px;}
+  .cd-props{margin-bottom:12px;}
+  .cd-prop{
+    display:flex;justify-content:space-between;
+    padding:6px 0;border-bottom:1px solid #1e293b;font-size:.82rem;
+  }
+  .cd-prop:last-child{border-bottom:none;}
+  .cd-prop span:first-child{color:#94a3b8;}
+  .cd-desc{
+    font-size:.83rem;line-height:1.7;color:#94a3b8;
+    background:#131b2e;border-radius:8px;padding:14px;
+    border-left:3px solid;
+  }
+
+  /* ──── TABLA RANGOS ÓPTIMOS ──── */
+  .ranges-table{
+    width:100%;max-width:1100px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;margin-top:20px;overflow:hidden;
+  }
+  .rt-head{
+    display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 2fr;
+    padding:12px 20px;background:#131b2e;
+    border-bottom:1px solid #1e293b;
+  }
+  .rt-head span{
+    font-family:'Space Mono',monospace;font-size:.6rem;
+    letter-spacing:2px;text-transform:uppercase;color:#475569;
+  }
+  .rt-row{
+    display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 2fr;
+    padding:10px 20px;border-bottom:1px solid rgba(30,41,59,.6);
+    align-items:center;font-size:.82rem;transition:background .2s;
+  }
+  .rt-row:last-child{border-bottom:none;}
+  .rt-row:hover{background:#131b2e;}
+  .rt-badge{
+    font-family:'Space Mono',monospace;font-size:.65rem;
+    padding:3px 10px;border-radius:20px;font-weight:700;
+    display:inline-block;
+  }
+  .impact-bar{
+    height:6px;border-radius:3px;margin-top:4px;
+    display:flex;overflow:hidden;
+  }
+  .impact-fill{height:100%;border-radius:3px;}
+
+  /* ──── LEYENDA SISTEMAS ──── */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:14px;
+    margin-bottom:20px;justify-content:center;
+    max-width:1100px;width:100%;
+  }
+  .legend-item{
+    display:flex;align-items:center;gap:7px;
+    font-size:.76rem;color:#94a3b8;cursor:pointer;
+    padding:5px 10px;border-radius:20px;
+    border:1px solid #1e293b;transition:all .3s;
+  }
+  .legend-item:hover{border-color:var(--lc);}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<h1>Ciclo de Tratamiento del Agua</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — Filtración física + desinfección química + control automático · 33.500 litros en circulación permanente · Ref. ZP-9M-PREM-2026-001</p>
+
+<!-- PARÁMETROS -->
+<div class="params-bar">
+  <div class="param-item">
+    <div class="param-label">pH agua</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-ph" style="background:#4ade80;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#4ade80">7,4</div>
+    <div class="param-range">Rango: 7,2 – 7,6</div>
+    <div class="param-status status-ok"></div>
+  </div>
+  <div class="param-item">
+    <div class="param-label">Cloro libre</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-cl" style="background:#22d3ee;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#22d3ee">1,0 ppm</div>
+    <div class="param-range">Rango: 0,5 – 1,5 ppm</div>
+    <div class="param-status status-ok"></div>
+  </div>
+  <div class="param-item">
+    <div class="param-label">ORP (Redox)</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-orp" style="background:#a78bfa;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#a78bfa">720 mV</div>
+    <div class="param-range">Rango: 650 – 750 mV</div>
+    <div class="param-status status-ok"></div>
+  </div>
+  <div class="param-item">
+    <div class="param-label">Temperatura</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-temp" style="background:#f97316;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#f97316">28°C</div>
+    <div class="param-range">Rango: 26 – 32°C</div>
+    <div class="param-status status-ok"></div>
+  </div>
+  <div class="param-item">
+    <div class="param-label">Alcalinidad</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-alk" style="background:#fbbf24;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#fbbf24">120 ppm</div>
+    <div class="param-range">Rango: 80 – 150 ppm</div>
+    <div class="param-status status-ok"></div>
+  </div>
+  <div class="param-item">
+    <div class="param-label">Sal disuelta</div>
+    <div class="param-gauge">
+      <div class="param-gauge-fill" id="g-sal" style="background:#60a5fa;width:0%"></div>
+    </div>
+    <div class="param-value" style="color:#60a5fa">5,0 g/L</div>
+    <div class="param-range">Rango: 4 – 6 g/L</div>
+    <div class="param-status status-ok"></div>
+  </div>
+</div>
+
+<!-- LEYENDA -->
+<div class="legend">
+  <div class="legend-item" style="--lc:#22d3ee"><div class="legend-dot" style="background:#22d3ee"></div>Agua aspiración (retorno)</div>
+  <div class="legend-item" style="--lc:#4ade80"><div class="legend-dot" style="background:#4ade80"></div>Agua tratada (impulsión)</div>
+  <div class="legend-item" style="--lc:#C9A84C"><div class="legend-dot" style="background:#C9A84C"></div>Circuito principal</div>
+  <div class="legend-item" style="--lc:#f97316"><div class="legend-dot" style="background:#f97316"></div>Señal control automático</div>
+</div>
+
+<!-- DIAGRAMA SVG -->
+<div class="flow-wrap">
+  <svg viewBox="0 0 1040 480" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#22d3ee" opacity=".7"/>
+      </marker>
+      <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#4ade80" opacity=".7"/>
+      </marker>
+      <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#f97316" opacity=".6"/>
+      </marker>
+      <marker id="arrowGold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#C9A84C" opacity=".7"/>
+      </marker>
+      <filter id="glow2">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- ══ VASO (zona central) ══ -->
+    <rect x="330" y="160" width="380" height="200" rx="8"
+      fill="rgba(14,116,144,.12)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="520" y="250" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#22d3ee" font-weight="700">VASO · 33.500 L</text>
+    <text x="520" y="266" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Gresite premium · Sistema WEDI</text>
+
+    <!-- Skimmer (arriba del vaso) -->
+    <g class="cycle-node" id="cn-skimmer" onclick="showCycle('skimmer')">
+      <circle class="cn-glow" cx="380" cy="160" r="28" fill="#22d3ee" opacity=".1"/>
+      <circle class="cn-circle" cx="380" cy="160" r="22" fill="#0e1f30" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="380" y="156" text-anchor="middle" font-size="11" fill="#22d3ee">⇑</text>
+      <text x="380" y="170" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#22d3ee">SKIM</text>
+    </g>
+    <text x="380" y="130" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Skimmer</text>
+    <text x="380" y="142" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#64748b">Superficie</text>
+
+    <!-- Sumidero (abajo del vaso) -->
+    <g class="cycle-node" id="cn-sumidero" onclick="showCycle('sumidero')">
+      <circle class="cn-glow" cx="520" cy="360" r="28" fill="#22d3ee" opacity=".1"/>
+      <circle class="cn-circle" cx="520" cy="360" r="22" fill="#0e1f30" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="520" y="356" text-anchor="middle" font-size="11" fill="#22d3ee">⇓</text>
+      <text x="520" y="370" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#22d3ee">FONDO</text>
+    </g>
+    <text x="520" y="397" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Sumidero fondo</text>
+
+    <!-- SALA TÉCNICA (izq) -->
+    <rect x="20" y="140" width="260" height="200" rx="8"
+      fill="rgba(201,168,76,.05)" stroke="#C9A84C" stroke-width="1" stroke-dasharray="6 3"/>
+    <text x="150" y="162" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#C9A84C" letter-spacing="2">SALA TÉCNICA</text>
+
+    <!-- Bomba -->
+    <g class="cycle-node" id="cn-bomba" onclick="showCycle('bomba')">
+      <circle class="cn-glow" cx="80" cy="230" r="30" fill="#C9A84C" opacity=".1"/>
+      <circle class="cn-circle" cx="80" cy="230" r="24" fill="#0e1f30" stroke="#C9A84C" stroke-width="1.5"/>
+      <text x="80" y="226" text-anchor="middle" font-size="13" fill="#C9A84C">◎</text>
+      <text x="80" y="240" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#C9A84C">BOMBA</text>
+    </g>
+    <text x="80" y="200" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Filtración</text>
+
+    <!-- Filtro -->
+    <g class="cycle-node" id="cn-filtro" onclick="showCycle('filtro')">
+      <circle class="cn-glow" cx="220" cy="230" r="30" fill="#60a5fa" opacity=".1"/>
+      <circle class="cn-circle" cx="220" cy="230" r="24" fill="#0e1f30" stroke="#60a5fa" stroke-width="1.5"/>
+      <text x="220" y="226" text-anchor="middle" font-size="13" fill="#60a5fa">⬡</text>
+      <text x="220" y="240" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#60a5fa">FILTRO</text>
+    </g>
+    <text x="220" y="200" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Vidrio activo Ø600</text>
+
+    <!-- TRATAMIENTO SUPERIOR -->
+    <!-- UV -->
+    <g class="cycle-node" id="cn-uv" onclick="showCycle('uv')">
+      <circle class="cn-glow" cx="400" cy="68" r="28" fill="#fbbf24" opacity=".1"/>
+      <circle class="cn-circle" cx="400" cy="68" r="22" fill="#0e1f30" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="400" y="64" text-anchor="middle" font-size="12" fill="#fbbf24">☀</text>
+      <text x="400" y="78" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24">UV</text>
+    </g>
+    <text x="400" y="36" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Cámara UV</text>
+
+    <!-- Clorador salino -->
+    <g class="cycle-node" id="cn-cloro" onclick="showCycle('cloro')">
+      <circle class="cn-glow" cx="540" cy="68" r="28" fill="#4ade80" opacity=".1"/>
+      <circle class="cn-circle" cx="540" cy="68" r="22" fill="#0e1f30" stroke="#4ade80" stroke-width="1.5"/>
+      <text x="540" y="63" text-anchor="middle" font-size="11" fill="#4ade80">Cl</text>
+      <text x="540" y="77" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#4ade80">SALINO</text>
+    </g>
+    <text x="540" y="36" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Cloración salina</text>
+
+    <!-- pH Dosificador -->
+    <g class="cycle-node" id="cn-ph" onclick="showCycle('ph')">
+      <circle class="cn-glow" cx="680" cy="68" r="28" fill="#f472b6" opacity=".1"/>
+      <circle class="cn-circle" cx="680" cy="68" r="22" fill="#0e1f30" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="680" y="64" text-anchor="middle" font-size="11" fill="#f472b6">pH</text>
+      <text x="680" y="78" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f472b6">CONTROL</text>
+    </g>
+    <text x="680" y="36" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Control pH auto.</text>
+
+    <!-- SMART POOL (derecha) -->
+    <g class="cycle-node" id="cn-smart" onclick="showCycle('smart')">
+      <circle class="cn-glow" cx="950" cy="250" r="34" fill="#f97316" opacity=".1"/>
+      <circle class="cn-circle" cx="950" cy="250" r="28" fill="#0e1f30" stroke="#f97316" stroke-width="1.5"/>
+      <text x="950" y="245" text-anchor="middle" font-size="14" fill="#f97316">◎</text>
+      <text x="950" y="260" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">SMART POOL</text>
+    </g>
+    <text x="950" y="210" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">Control domótica</text>
+    <text x="950" y="222" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#64748b">Wi-Fi · App · Sondas</text>
+
+    <!-- Boquillas retorno (derecha del vaso) -->
+    <g class="cycle-node" id="cn-retorno" onclick="showCycle('retorno')">
+      <circle class="cn-glow" cx="710" cy="240" r="24" fill="#4ade80" opacity=".1"/>
+      <circle class="cn-circle" cx="710" cy="240" r="18" fill="#0e1f30" stroke="#4ade80" stroke-width="1.5"/>
+      <text x="710" y="244" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#4ade80">RET.</text>
+    </g>
+    <text x="740" y="240" font-family="DM Sans" font-size="8" fill="#94a3b8">Boquillas retorno</text>
+
+    <!-- ══ LÍNEAS DE FLUJO ══ -->
+    <!-- Skimmer → Bomba (aspiración, azul) -->
+    <path class="flow-line" d="M 358 160 Q 200 130 80 207"
+      fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+    <!-- Sumidero → Bomba (azul) -->
+    <path class="flow-line" d="M 498 360 Q 40 380 80 255"
+      fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowBlue)" style="animation-delay:.5s"/>
+
+    <!-- Bomba → Filtro (dorado) -->
+    <line class="flow-line" x1="105" y1="230" x2="195" y2="230"
+      stroke="#C9A84C" stroke-width="1.5" marker-end="url(#arrowGold)"/>
+
+    <!-- Filtro → Bypass UV (dorado subiendo) -->
+    <path class="flow-line" d="M 220 206 Q 220 100 378 80"
+      fill="none" stroke="#C9A84C" stroke-width="1.5" marker-end="url(#arrowGold)" style="animation-delay:.3s"/>
+
+    <!-- UV → Clorador (dorado) -->
+    <line class="flow-line" x1="423" y1="68" x2="517" y2="68"
+      stroke="#C9A84C" stroke-width="1.5" marker-end="url(#arrowGold)"/>
+
+    <!-- Clorador → pH (dorado) -->
+    <line class="flow-line" x1="563" y1="68" x2="657" y2="68"
+      stroke="#C9A84C" stroke-width="1.5" marker-end="url(#arrowGold)"/>
+
+    <!-- pH → Boquillas retorno (verde = tratada) -->
+    <path class="flow-line" d="M 680 91 Q 680 120 710 222"
+      fill="none" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrowGreen)" style="animation-delay:.7s"/>
+
+    <!-- Boquillas → Vaso (verde) -->
+    <line class="flow-line" x1="692" y1="240" x2="712" y2="240"
+      stroke="#4ade80" stroke-width="1.5"/>
+
+    <!-- Smart Pool → Sistemas (control, naranja punteado) -->
+    <path class="flow-line" d="M 921 250 Q 860 250 760 250"
+      fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowOrange)" style="animation-direction:reverse"/>
+    <!-- Smart Pool → pH control -->
+    <path d="M 950 222 Q 950 90 703 75"
+      fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="3 5" opacity=".4"/>
+    <!-- Smart Pool → Cloro control -->
+    <path d="M 950 222 Q 850 50 563 70"
+      fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="3 5" opacity=".3"/>
+
+    <!-- Sondas en vaso al Smart Pool -->
+    <path d="M 640 210 Q 800 200 921 245"
+      fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+
+    <!-- Etiquetas de flujo -->
+    <text x="140" y="217" font-family="Space Mono" font-size="7" fill="#C9A84C" text-anchor="middle">Aspiración</text>
+    <text x="470" y="56" font-family="Space Mono" font-size="7" fill="#C9A84C" text-anchor="middle">Bypass tratamiento</text>
+
+    <!-- Sonda pH/ORP en vaso -->
+    <rect x="560" y="185" width="60" height="26" rx="4"
+      fill="rgba(244,114,182,.1)" stroke="#f472b6" stroke-width="1"/>
+    <text x="590" y="197" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f472b6">SONDA</text>
+    <text x="590" y="207" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f472b6">pH/ORP</text>
+
+    <!-- Sonda temperatura en vaso -->
+    <rect x="430" y="185" width="70" height="26" rx="4"
+      fill="rgba(249,115,22,.1)" stroke="#f97316" stroke-width="1"/>
+    <text x="465" y="197" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">SONDA</text>
+    <text x="465" y="207" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">TEMP.</text>
+
+  </svg>
+</div>
+
+<!-- PANEL DETALLE -->
+<div class="cycle-detail" id="cycle-detail">
+  <div class="cd-grid" id="cd-content"></div>
+</div>
+
+<!-- TABLA RANGOS ÓPTIMOS -->
+<div class="ranges-table">
+  <div class="rt-head">
+    <span>Parámetro</span>
+    <span>Mínimo</span>
+    <span>Óptimo</span>
+    <span>Máximo</span>
+    <span>Efecto fuera de rango</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#4ade80;font-weight:600">pH</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">7,2</div></span>
+    <span><div class="rt-badge" style="background:rgba(74,222,128,.15);color:#4ade80">7,4</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">7,6</div></span>
+    <span style="font-size:.78rem;color:#64748b">Bajo: irritación ojos. Alto: cloro ineficaz, turbidez</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#22d3ee;font-weight:600">Cloro libre</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">0,5 ppm</div></span>
+    <span><div class="rt-badge" style="background:rgba(34,211,238,.15);color:#22d3ee">1,0 ppm</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">1,5 ppm</div></span>
+    <span style="font-size:.78rem;color:#64748b">Bajo: algas + bacterias. Alto: irritación, olor</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#a78bfa;font-weight:600">ORP (Redox)</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">650 mV</div></span>
+    <span><div class="rt-badge" style="background:rgba(167,139,250,.15);color:#a78bfa">720 mV</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">750 mV</div></span>
+    <span style="font-size:.78rem;color:#64748b">Bajo: desinfección insuficiente. Alto: oxidación excesiva</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#fbbf24;font-weight:600">Alcalinidad total</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">80 ppm</div></span>
+    <span><div class="rt-badge" style="background:rgba(251,191,36,.15);color:#fbbf24">120 ppm</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">150 ppm</div></span>
+    <span style="font-size:.78rem;color:#64748b">Bajo: pH inestable. Alto: turbidez, incrustaciones</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#60a5fa;font-weight:600">Sal disuelta</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">4 g/L</div></span>
+    <span><div class="rt-badge" style="background:rgba(96,165,250,.15);color:#60a5fa">5 g/L</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">6 g/L</div></span>
+    <span style="font-size:.78rem;color:#64748b">Bajo: clorador ineficiente. Alto: corrosión accesorios</span>
+  </div>
+  <div class="rt-row">
+    <span style="color:#f97316;font-weight:600">Temperatura</span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">26°C</div></span>
+    <span><div class="rt-badge" style="background:rgba(249,115,22,.15);color:#f97316">28°C</div></span>
+    <span><div class="rt-badge" style="background:rgba(100,116,139,.15);color:#94a3b8">32°C</div></span>
+    <span style="font-size:.78rem;color:#64748b">Alta: acelera consumo cloro y crecimiento algas</span>
+  </div>
+</div>
+
+<script>
+const cycleData={
+  skimmer:{color:'#22d3ee',icon:'⇑',title:'Skimmer de Superficie',sub:'Aspiración continua de detritos flotantes',
+    props:[['Tipo','Skimmer estático empotrado'],['Función','Aspiración superficie continua'],['Prefiltro','Canastilla extraíble'],['Conexión','Ø50mm al colector aspiración'],['Posición','Zona opuesta a boquillas retorno']],
+    desc:'El skimmer captura hojas, insectos, cremas y cualquier detrito flotante antes de que hundan y saturen el fondo. Su prefiltro debe limpiarse semanalmente. Es el primer elemento de la cadena de filtración.'},
+  sumidero:{color:'#22d3ee',icon:'⇓',title:'Sumidero de Fondo',sub:'Aspiración del fondo del vaso',
+    props:[['Tipo','Sumidero DN50 inoxidable'],['Función','Aspiración fondo + turbiedad'],['Doble aspiración','Fondo + skimmer paralelo'],['Válvula','Regulación caudal independiente'],['Limpieza manual','Boquilla aspiración robot manual']],
+    desc:'El sumidero trabaja en paralelo con el skimmer. La válvula de 6 vías de la sala técnica permite regular qué porcentaje del caudal de la bomba procede de fondo y qué porcentaje de superficie, optimizando la calidad del agua según el uso.'},
+  bomba:{color:'#C9A84C',icon:'◎',title:'Bomba de Filtración',sub:'Corazón hidráulico del ciclo · Funcionamiento 8–12h/día',
+    props:[['Tipo','Monobloc con prefiltro'],['Caudal nominal','8–12 m³/h'],['Recirculaciones/día','3–4 completas del vaso'],['Cabeza manométrica','10 m.c.a. mínimo'],['Consumo','~700W'],['Horas funcionamiento','8–12h/día (temporizador)']],
+    desc:'La bomba debe garantizar al menos 3 recirculaciones completas del vaso al día (3 × 33.500 L = ~100.500 L/día). El temporizador del Smart Pool optimiza el horario de filtración para reducir el coste eléctrico aprovechando las tarifas nocturnas.'},
+  filtro:{color:'#60a5fa',icon:'⬡',title:'Filtro de Vidrio Activo',sub:'Filtración mecánica por lecho filtrante Ø600mm',
+    props:[['Tipo','Filtro a presión Ø600mm'],['Lecho','Vidrio activo reciclado (vs arena)'],['Válvula','6 vías: filtrar, retrolavado, aclarado, vaciado, recirculación, cerrado'],['Retrolavado','Semanal 3–5 minutos'],['Eficiencia','Partículas desde 3–5 µm']],
+    desc:'El vidrio activo filtra partículas más pequeñas que la arena convencional (3 µm vs 20 µm) y es más higiénico al ser un material inerte. El retrolavado semanal (válvula 6 vías posición "backwash") limpia el lecho en 3–5 minutos.'},
+  uv:{color:'#fbbf24',icon:'☀',title:'Cámara UV Media Presión',sub:'Desinfección sin químicos · Primero en el bypass',
+    props:[['Tipo','Cámara UV media presión'],['Lámpara','Cuarzo alta intensidad'],['Vida útil','9.000 – 12.000 h'],['Posición','Bypass tras filtro, antes de clorador'],['Acción','Destrucción ADN bacterias + virus + algas'],['Ventaja','No genera subproductos']],
+    desc:'La cámara UV destruye el ADN de microorganismos sin añadir ningún producto químico. Al estar antes del clorador salino en el circuito, reduce drásticamente la carga microbiológica que el clorador debe tratar, permitiendo trabajar con concentraciones mínimas de cloro activo.'},
+  cloro:{color:'#4ade80',icon:'Cl',title:'Clorador Salino',sub:'Producción de cloro activo in-situ por electrólisis',
+    props:[['Proceso','Electrólisis NaCl → Cl₂ + NaOH'],['Celda','Titanio con recubrimiento de platino/rutenio'],['Control','ORP automático (setpoint ~720 mV)'],['Sal óptima','4 – 6 g/L (agua ligeramente salada)'],['Subproductos','NaOH (eleva pH levemente → compensado por dosificador pH)'],['Vida celda','~10.000 h (5 temporadas)']],
+    desc:'La electrólisis convierte la sal disuelta en cloro activo (hipoclorito) directamente en el circuito, eliminando la necesidad de almacenar y manipular productos químicos corrosivos. El controlador ORP mide la capacidad desinfectante real del agua y ajusta la producción automáticamente.'},
+  ph:{color:'#f472b6',icon:'pH',title:'Control Automático de pH',sub:'Dosificador peristáltico + sonda pH/ORP',
+    props:[['Bomba','Peristáltica (sin contacto producto-motor)'],['Sonda','pH + ORP combinada, inmersión en vaso'],['Setpoint pH','7,4 (rango 7,2 – 7,6)'],['Producto','Ácido muriático diluido (bajada pH)'],['Cadencia','Dosis pequeñas y frecuentes (no "choque")'],['Comunicación','Smart Pool: alerta si pH fuera de rango']],
+    desc:'El clorador salino tiende a elevar el pH del agua (efecto del NaOH producido). El dosificador de pH actúa como compensador automático, inyectando pequeñas dosis de corrector de pH para mantener el rango óptimo 7,2–7,6 que garantiza la máxima eficacia del cloro activo.'},
+  retorno:{color:'#4ade80',icon:'→',title:'Boquillas de Retorno',sub:'Impulsión del agua tratada al vaso',
+    props:[['Número','2–4 boquillas (según posición)'],['Tipo','Boquilla orientable inoxidable'],['Posición','Diagonal al skimmer (mezcla óptima)'],['Contracorriente','1 boquilla adicional (cañón Cap.2)'],['Orientación','Angulada para crear flujo laminar circular'],['Material','Inox AISI 316L']],
+    desc:'Las boquillas de retorno son el último punto del circuito: devuelven el agua ya filtrada, desinfectada y con química ajustada al vaso. Su orientación diagonal respecto al skimmer crea una circulación circular que lleva los detritos flotantes hacia la boca de aspiración del skimmer.'},
+  smart:{color:'#f97316',icon:'◎',title:'Smart Pool — Centralita Domótica',sub:'Cerebro del sistema · Monitorización y control 24h',
+    props:[['Conectividad','Wi-Fi 2.4 GHz + nube'],['Sondas activas','pH, ORP, temperatura, caudal'],['Control','Bomba, calefacción, LED, persiana, química'],['Alertas','Push App si parámetro fuera de rango'],['Histórico','Dashboard con gráficas de evolución'],['App','iOS + Android · Tablet incluida']],
+    desc:'La centralita Smart Pool es el sistema nervioso de la piscina. Lee las sondas instaladas en el circuito, detecta desviaciones en los parámetros del agua, activa o desactiva equipos según programación y envía alertas al usuario en tiempo real, antes de que un problema pequeño se convierta en un problema grande.'}
+};
+
+let current=null;
+function showCycle(key){
+  const det=document.getElementById('cycle-detail');
+  const cont=document.getElementById('cd-content');
+  if(current===key){det.classList.remove('open');current=null;return;}
+  const d=cycleData[key];
+  const propsHtml=d.props.map(([l,v])=>`
+    <div class="cd-prop">
+      <span>${l}</span>
+      <span style="color:${d.color};font-weight:600">${v}</span>
+    </div>`).join('');
+  cont.innerHTML=`
+    <div class="cd-col">
+      <div class="cd-badge" style="background:${d.color}18;color:${d.color};border:1px solid ${d.color}44">
+        ${d.icon} ${d.sub}
+      </div>
+      <div class="cd-title" style="color:${d.color}">${d.title}</div>
+      <div class="cd-sub">Especificaciones técnicas del componente</div>
+      <div class="cd-props">${propsHtml}</div>
+    </div>
+    <div class="cd-col">
+      <div class="cd-sub" style="margin-bottom:10px">Función en el ciclo</div>
+      <div class="cd-desc" style="border-color:${d.color}">${d.desc}</div>
+    </div>`;
+  det.classList.add('open');
+  current=key;
+}
+
+// Animar gauges al cargar
+window.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{
+    const gauges=[
+      {id:'g-ph',pct:70},
+      {id:'g-cl',pct:50},
+      {id:'g-orp',pct:75},
+      {id:'g-temp',pct:60},
+      {id:'g-alk',pct:65},
+      {id:'g-sal',pct:75},
+    ];
+    gauges.forEach((g,i)=>{
+      setTimeout(()=>{
+        const el=document.getElementById(g.id);
+        if(el) el.style.width=g.pct+'%';
+      },i*150);
+    });
+  },400);
+});
+</script>
+</body>
+</html>

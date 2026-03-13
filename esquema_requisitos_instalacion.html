@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Requisitos de Instalación — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#0a0e1a;color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;padding:30px 20px;
+  }
+  h1{
+    font-family:'Space Mono',monospace;font-size:1.3rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#4ade80;margin-bottom:6px;text-align:center;
+  }
+  .subtitle{font-size:.85rem;color:#64748b;margin-bottom:30px;text-align:center;max-width:700px;}
+
+  /* ──── ALERTA RESPONSABILIDAD ──── */
+  .alert-banner{
+    width:100%;max-width:1200px;
+    background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);
+    border-radius:12px;padding:14px 20px;margin-bottom:20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .alert-icon{font-size:1.4rem;}
+  .alert-text{font-size:.83rem;line-height:1.5;}
+  .alert-text strong{color:#fbbf24;}
+
+  /* ──── PLANO DE LOSA ──── */
+  .slab-section{
+    width:100%;max-width:1200px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:16px;padding:28px;margin-bottom:20px;
+  }
+  .sec-title{
+    font-family:'Space Mono',monospace;font-size:.7rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#64748b;margin-bottom:20px;text-align:center;
+  }
+
+  .slab-wrap{
+    display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .slab-diagram{flex:1.5;min-width:320px;}
+  .slab-specs{flex:1;min-width:240px;}
+
+  /* SVG del plano de losa */
+  .slab-svg-box{
+    background:#080c18;border:1px solid #1e293b;
+    border-radius:10px;padding:20px;
+    position:relative;overflow:hidden;
+  }
+
+  /* Grid spec cards */
+  .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .spec-card{
+    background:#131b2e;border:1px solid #1e293b;
+    border-radius:10px;padding:14px;text-align:center;
+    cursor:pointer;transition:all .3s;border-top:3px solid;
+  }
+  .spec-card:hover{background:#0d1525;transform:translateY(-2px);}
+  .spec-val{
+    font-family:'Space Mono',monospace;font-size:1.2rem;
+    font-weight:700;margin-bottom:4px;
+  }
+  .spec-lbl{font-size:.72rem;color:#64748b;}
+  .spec-note{
+    font-size:.65rem;color:#475569;margin-top:3px;
+    font-style:italic;
+  }
+
+  /* ──── CHECKLIST DE REQUISITOS ──── */
+  .req-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:14px;width:100%;max-width:1200px;
+  }
+  .req-card{
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;padding:20px;
+    border-left:3px solid;cursor:pointer;
+    transition:all .3s;position:relative;overflow:hidden;
+  }
+  .req-card::before{
+    content:'';position:absolute;inset:0;opacity:0;
+    transition:opacity .3s;border-radius:12px;
+  }
+  .req-card:hover::before,.req-card.active::before{opacity:1;}
+  .req-card:hover{transform:translateY(-2px);}
+  .req-card.active{transform:translateY(-3px);}
+
+  .req-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .req-icon{
+    width:40px;height:40px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;flex-shrink:0;
+  }
+  .req-title{font-weight:700;font-size:.92rem;}
+  .req-cat{
+    font-family:'Space Mono',monospace;font-size:.6rem;
+    letter-spacing:1.5px;color:#475569;
+  }
+  .req-items{font-size:.8rem;color:#64748b;line-height:1.7;}
+  .req-badge{
+    display:inline-flex;align-items:center;gap:4px;
+    font-family:'Space Mono',monospace;font-size:.62rem;
+    padding:3px 8px;border-radius:20px;
+    font-weight:700;margin-top:8px;
+  }
+
+  /* ──── PANEL EXPANDIDO ──── */
+  .expand-panel{
+    width:100%;max-width:1200px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;margin-top:14px;
+    max-height:0;overflow:hidden;
+    transition:max-height .5s ease,padding .3s;
+  }
+  .expand-panel.open{max-height:600px;padding:24px;}
+  .exp-grid{display:flex;gap:24px;flex-wrap:wrap;}
+  .exp-col{flex:1;min-width:240px;}
+  .exp-section-title{
+    font-family:'Space Mono',monospace;font-size:.62rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#475569;margin-bottom:10px;
+  }
+  .req-detail-item{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:7px 0;border-bottom:1px solid #1e293b;
+    font-size:.82rem;
+  }
+  .req-detail-item:last-child{border-bottom:none;}
+  .rdi-icon{
+    width:20px;height:20px;border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.65rem;flex-shrink:0;margin-top:1px;
+  }
+  .req-desc{
+    font-size:.83rem;line-height:1.7;color:#94a3b8;
+    background:#131b2e;border-radius:8px;padding:14px;
+    border-left:3px solid;
+  }
+
+  /* ──── CHECKLIST RESPONSABILIDADES ──── */
+  .resp-table{
+    width:100%;max-width:1200px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;margin-top:20px;overflow:hidden;
+  }
+  .resp-header{
+    display:grid;grid-template-columns:1fr auto auto;
+    padding:12px 20px;background:#131b2e;
+    border-bottom:1px solid #1e293b;
+  }
+  .resp-header span{
+    font-family:'Space Mono',monospace;font-size:.62rem;
+    letter-spacing:2px;text-transform:uppercase;color:#475569;
+    text-align:center;
+  }
+  .resp-header span:first-child{text-align:left;}
+  .resp-row{
+    display:grid;grid-template-columns:1fr auto auto;
+    padding:11px 20px;border-bottom:1px solid rgba(30,41,59,.5);
+    align-items:center;font-size:.82rem;
+    transition:background .2s;
+  }
+  .resp-row:last-child{border-bottom:none;}
+  .resp-row:hover{background:#131b2e;}
+  .resp-badge{
+    display:flex;align-items:center;justify-content:center;
+    width:90px;font-family:'Space Mono',monospace;
+    font-size:.62rem;font-weight:700;padding:4px 0;
+    border-radius:20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Requisitos de Instalación</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — Preparación civil, accesos y suministros que debe aportar el cliente antes de la entrega · Ref. ZP-9M-PREM-2026-001</p>
+
+<!-- ALERTA -->
+<div class="alert-banner">
+  <div class="alert-icon">⚠</div>
+  <div class="alert-text">
+    <strong>Responsabilidad del cliente:</strong> Los trabajos de obra civil, suministros de luz y agua, y permisos municipales son responsabilidad exclusiva del propietario. ZARCA no ejecuta obra civil. El módulo se entrega y conecta sobre losa ejecutada y servicios disponibles.
+  </div>
+</div>
+
+<!-- PLANO LOSA -->
+<div class="slab-section">
+  <div class="sec-title">Losa de cimentación requerida — Dimensiones mínimas</div>
+  <div class="slab-wrap">
+    <div class="slab-diagram">
+      <div class="slab-svg-box">
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" stroke-width=".5"/>
+            </pattern>
+          </defs>
+          <!-- Grid fondo -->
+          <rect width="520" height="280" fill="url(#grid)"/>
+
+          <!-- LOSA (zona gris) -->
+          <rect x="60" y="40" width="400" height="180" rx="4"
+            fill="rgba(100,116,139,.1)" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+          <!-- MÓDULO (zona interior) -->
+          <rect x="90" y="70" width="340" height="120" rx="4"
+            fill="rgba(74,222,128,.08)" stroke="#4ade80" stroke-width="2"/>
+
+          <!-- Dimensión longitud módulo -->
+          <line x1="90" y1="210" x2="430" y2="210" stroke="#4ade80" stroke-width="1"/>
+          <line x1="90" y1="205" x2="90" y2="215" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="430" y1="205" x2="430" y2="215" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="260" y="223" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#4ade80" font-weight="700">9,0 m (módulo)</text>
+
+          <!-- Dimensión longitud losa -->
+          <line x1="60" y1="235" x2="460" y2="235" stroke="#64748b" stroke-width="1"/>
+          <line x1="60" y1="230" x2="60" y2="240" stroke="#64748b" stroke-width="1.5"/>
+          <line x1="460" y1="230" x2="460" y2="240" stroke="#64748b" stroke-width="1.5"/>
+          <text x="260" y="248" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#64748b">10,0 m mínimo (losa)</text>
+
+          <!-- Dimensión anchura módulo -->
+          <line x1="445" y1="70" x2="445" y2="190" stroke="#4ade80" stroke-width="1"/>
+          <line x1="440" y1="70" x2="450" y2="70" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="440" y1="190" x2="450" y2="190" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="478" y="135" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#4ade80" font-weight="700" transform="rotate(90,478,135)">2,44 m</text>
+
+          <!-- Dimensión anchura losa -->
+          <line x1="480" y1="40" x2="480" y2="220" stroke="#64748b" stroke-width="1"/>
+          <line x1="475" y1="40" x2="485" y2="40" stroke="#64748b" stroke-width="1.5"/>
+          <line x1="475" y1="220" x2="485" y2="220" stroke="#64748b" stroke-width="1.5"/>
+          <text x="505" y="135" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#64748b" transform="rotate(90,505,135)">3,0 m mín.</text>
+
+          <!-- Margen lateral -->
+          <line x1="60" y1="130" x2="90" y2="130" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="75" y="125" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24">0,3m</text>
+          <line x1="430" y1="130" x2="460" y2="130" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="445" y="125" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24">0,3m</text>
+
+          <!-- Marcas de anclaje -->
+          <circle cx="110" cy="85" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+          <circle cx="410" cy="85" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+          <circle cx="110" cy="175" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+          <circle cx="410" cy="175" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="95" y="62" font-family="Space Mono" font-size="7" fill="#ef4444">⊕ Anclaje</text>
+
+          <!-- Etiquetas -->
+          <rect x="165" y="110" width="190" height="40" rx="4" fill="rgba(74,222,128,.05)" stroke="rgba(74,222,128,.2)" stroke-width="1"/>
+          <text x="260" y="126" text-anchor="middle" font-family="Space Mono" font-size="8" fill="#4ade80" font-weight="700">MÓDULO ZARCA</text>
+          <text x="260" y="140" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#64748b">9,0 × 2,44 m · 8.200 kg</text>
+
+          <!-- Leyenda -->
+          <rect x="62" y="42" width="12" height="7" rx="1" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="78" y="50" font-family="Space Mono" font-size="7" fill="#64748b">Losa mín.</text>
+          <rect x="140" y="42" width="12" height="7" rx="1" fill="rgba(74,222,128,.08)" stroke="#4ade80" stroke-width="1"/>
+          <text x="156" y="50" font-family="Space Mono" font-size="7" fill="#4ade80">Módulo</text>
+          <circle cx="230" cy="46" r="4" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="238" y="50" font-family="Space Mono" font-size="7" fill="#ef4444">Anclajes</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="slab-specs">
+      <div class="spec-grid">
+        <div class="spec-card" style="border-top-color:#4ade80;">
+          <div class="spec-val" style="color:#4ade80;">10,0 m</div>
+          <div class="spec-lbl">Longitud mínima losa</div>
+          <div class="spec-note">+0,5m cada extremo</div>
+        </div>
+        <div class="spec-card" style="border-top-color:#4ade80;">
+          <div class="spec-val" style="color:#4ade80;">3,0 m</div>
+          <div class="spec-lbl">Anchura mínima losa</div>
+          <div class="spec-note">+0,3m cada lateral</div>
+        </div>
+        <div class="spec-card" style="border-top-color:#fbbf24;">
+          <div class="spec-val" style="color:#fbbf24;">20 cm</div>
+          <div class="spec-lbl">Espesor mínimo</div>
+          <div class="spec-note">HA-25 armado</div>
+        </div>
+        <div class="spec-card" style="border-top-color:#fbbf24;">
+          <div class="spec-val" style="color:#fbbf24;">500 kg/m²</div>
+          <div class="spec-lbl">Capacidad portante</div>
+          <div class="spec-note">Módulo lleno: 8.200 kg</div>
+        </div>
+        <div class="spec-card" style="border-top-color:#ef4444;">
+          <div class="spec-val" style="color:#ef4444;">4 pts</div>
+          <div class="spec-lbl">Anclajes embebidos</div>
+          <div class="spec-note">M16 según plano ZARCA</div>
+        </div>
+        <div class="spec-card" style="border-top-color:#ef4444;">
+          <div class="spec-val" style="color:#ef4444;">±5 mm</div>
+          <div class="spec-lbl">Planimetría losa</div>
+          <div class="spec-note">Nivel requerido</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GRID REQUISITOS -->
+<div class="req-grid">
+
+  <div class="req-card" id="req-1" onclick="expandReq(1)"
+    style="border-left-color:#C9A84C;">
+    <div style="position:absolute;inset:0;background:rgba(201,168,76,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(201,168,76,.15);color:#C9A84C;">🏗</div>
+      <div>
+        <div class="req-title" style="color:#C9A84C;">Obra Civil</div>
+        <div class="req-cat">RESPONSABILIDAD CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Losa HA-25 armada · Anclajes M16 embebidos · Nivel ±5mm · Excavación si aplica
+    </div>
+    <div class="req-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">⚠ Previo a entrega</div>
+  </div>
+
+  <div class="req-card" id="req-2" onclick="expandReq(2)"
+    style="border-left-color:#22d3ee;">
+    <div style="position:absolute;inset:0;background:rgba(34,211,238,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(34,211,238,.15);color:#22d3ee;">💧</div>
+      <div>
+        <div class="req-title" style="color:#22d3ee;">Suministro de Agua</div>
+        <div class="req-cat">RESPONSABILIDAD CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Toma de agua potable próxima · DN25 mínimo · Presión 2–6 bar · Para llenado inicial y reposición
+    </div>
+    <div class="req-badge" style="background:rgba(34,211,238,.15);color:#22d3ee;">≈ 33.500 L primer llenado</div>
+  </div>
+
+  <div class="req-card" id="req-3" onclick="expandReq(3)"
+    style="border-left-color:#f97316;">
+    <div style="position:absolute;inset:0;background:rgba(249,115,22,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(249,115,22,.15);color:#f97316;">⚡</div>
+      <div>
+        <div class="req-title" style="color:#f97316;">Suministro Eléctrico</div>
+        <div class="req-cat">RESPONSABILIDAD CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Línea 230V / 50Hz monofásica desde cuadro general · Sección mínima 4mm² · Con diferencial 30mA
+    </div>
+    <div class="req-badge" style="background:rgba(249,115,22,.15);color:#f97316;">Potencia total: ~3,8 kW</div>
+  </div>
+
+  <div class="req-card" id="req-4" onclick="expandReq(4)"
+    style="border-left-color:#818cf8;">
+    <div style="position:absolute;inset:0;background:rgba(129,140,248,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(129,140,248,.15);color:#818cf8;">🚚</div>
+      <div>
+        <div class="req-title" style="color:#818cf8;">Acceso para Transporte</div>
+        <div class="req-cat">RESPONSABILIDAD CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Paso libre de 3,2m altura y 2,8m anchura · Radio de giro para camión plataforma · Sin obstáculos aéreos
+    </div>
+    <div class="req-badge" style="background:rgba(129,140,248,.15);color:#818cf8;">Camión plataforma 12m</div>
+  </div>
+
+  <div class="req-card" id="req-5" onclick="expandReq(5)"
+    style="border-left-color:#34d399;">
+    <div style="position:absolute;inset:0;background:rgba(52,211,153,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(52,211,153,.15);color:#34d399;">📋</div>
+      <div>
+        <div class="req-title" style="color:#34d399;">Permisos y Licencias</div>
+        <div class="req-cat">RESPONSABILIDAD CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Licencia de obra mayor o menor según municipio · Comunicación de actividad · Comunicación a ROPSI si aplica
+    </div>
+    <div class="req-badge" style="background:rgba(52,211,153,.15);color:#34d399;">Consultar Ayuntamiento</div>
+  </div>
+
+  <div class="req-card" id="req-6" onclick="expandReq(6)"
+    style="border-left-color:#60a5fa;">
+    <div style="position:absolute;inset:0;background:rgba(96,165,250,.04);border-radius:12px;"></div>
+    <div class="req-head">
+      <div class="req-icon" style="background:rgba(96,165,250,.15);color:#60a5fa;">📡</div>
+      <div>
+        <div class="req-title" style="color:#60a5fa;">Wi-Fi para Smart Pool</div>
+        <div class="req-cat">RECOMENDADO CLIENTE</div>
+      </div>
+    </div>
+    <div class="req-items">
+      Señal Wi-Fi 2.4 GHz disponible en zona de instalación · Para activación del sistema Smart Pool + App
+    </div>
+    <div class="req-badge" style="background:rgba(96,165,250,.15);color:#60a5fa;">2.4 GHz · -70 dBm mín.</div>
+  </div>
+
+</div>
+
+<!-- PANEL DETALLE EXPANDIDO -->
+<div class="expand-panel" id="expand-panel">
+  <div id="expand-content"></div>
+</div>
+
+<!-- TABLA RESPONSABILIDADES -->
+<div class="resp-table">
+  <div class="resp-header">
+    <span>Trabajo / Suministro</span>
+    <span>Cliente</span>
+    <span>ZARCA</span>
+  </div>
+  <div class="resp-row">
+    <span>Losa de cimentación HA-25</span>
+    <div class="resp-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">✓ CLIENTE</div>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+  </div>
+  <div class="resp-row">
+    <span>Anclajes embebidos en losa</span>
+    <div class="resp-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">✓ CLIENTE</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">PLANO ZARCA</div>
+  </div>
+  <div class="resp-row">
+    <span>Fabricación del módulo completo</span>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">✓ ZARCA</div>
+  </div>
+  <div class="resp-row">
+    <span>Transporte e instalación sobre losa</span>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">✓ ZARCA</div>
+  </div>
+  <div class="resp-row">
+    <span>Conexión línea eléctrica principal</span>
+    <div class="resp-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">✓ CLIENTE</div>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+  </div>
+  <div class="resp-row">
+    <span>Conexión agua potable (llenado)</span>
+    <div class="resp-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">✓ CLIENTE</div>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+  </div>
+  <div class="resp-row">
+    <span>Puesta en marcha + configuración App</span>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">✓ ZARCA</div>
+  </div>
+  <div class="resp-row">
+    <span>Primera carga de productos químicos</span>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">✓ ZARCA</div>
+  </div>
+  <div class="resp-row">
+    <span>Permisos municipales / licencias</span>
+    <div class="resp-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">✓ CLIENTE</div>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+  </div>
+  <div class="resp-row">
+    <span>Formación básica uso y mantenimiento</span>
+    <div class="resp-badge" style="background:rgba(30,41,59,.5);color:#475569;">— N/A</div>
+    <div class="resp-badge" style="background:rgba(74,222,128,.15);color:#34d399;">✓ ZARCA</div>
+  </div>
+</div>
+
+<script>
+const reqData = {
+  1:{color:'#C9A84C',title:'Obra Civil — Losa de Cimentación',
+    items:[
+      ['Hormigón HA-25 como mínimo · Armadura según plano ZARCA','Estruct.'],
+      ['Dimensiones: 10,0 × 3,0 m mínimo · Espesor: 20 cm mínimo','Dimensión'],
+      ['4 puntos de anclaje M16 embebidos según coordenadas del plano entregado','Anclaje'],
+      ['Planimetría de la losa: tolerancia ±5mm en toda la superficie','Nivel'],
+      ['Capacidad portante mínima: 500 kg/m² (módulo lleno = 8.200 kg totales)','Carga'],
+      ['La obra civil debe estar finalizada y curada (mín. 28 días) antes de la entrega','Plazo'],
+    ],
+    desc:'ZARCA entrega el plano de cimentación con las coordenadas exactas de los anclajes al confirmar el pedido. Es imprescindible que la losa esté terminada y con los anclajes colocados antes de acordar la fecha de entrega.',
+    kpis:[['Superficie losa','10,0 × 3,0 m'],['Espesor','≥ 20 cm HA-25'],['Anclajes','4 × M16 embebidos'],['Nivel','±5 mm tolerancia']]},
+  2:{color:'#22d3ee',title:'Suministro de Agua Potable',
+    items:[
+      ['Toma de agua potable accesible en la zona de instalación','Ubicación'],
+      ['Diámetro mínimo DN25 (1") para llenado en tiempo razonable','Diámetro'],
+      ['Presión de red: 2 – 6 bar (estándar red municipal)','Presión'],
+      ['Primer llenado: ~33.500 litros (aprox. 8–12 horas con caudal normal)','Volumen'],
+      ['El grifo de llenado manual se deja instalado para reposición periódica por evaporación','Reposición'],
+      ['El agua de red se trata con los sistemas químicos instalados para ajustar pH y dureza','Tratamiento'],
+    ],
+    desc:'El primer llenado requiere aproximadamente 33.500 litros de agua potable. Con una tubería DN25 a 3 bar de presión, el llenado completo tarda entre 8 y 12 horas. La evaporación anual en España puede suponer una reposición del 15–30% del volumen.',
+    kpis:[['Volumen llenado','≈ 33.500 L'],['Tiempo estimado','8–12 h (DN25)'],['Evaporación anual','15–30% volumen'],['Presión red','2–6 bar']]},
+  3:{color:'#f97316',title:'Suministro Eléctrico Monofásico',
+    items:[
+      ['Línea 230V AC / 50 Hz monofásica exclusiva para la piscina','Tensión'],
+      ['Sección cable mínima: 4 mm² (recomendado 6mm² si distancia > 30m)','Sección'],
+      ['Protección diferencial 30 mA tipo A obligatoria (REBT ITC-BT-31)','Protección'],
+      ['Magnetotérmico de cabecera 16A (mínimo) en cuadro general del cliente','Automático'],
+      ['El cuadro eléctrico IP65 de ZARCA incluye todas las protecciones internas de los equipos','Cuadro ZARCA'],
+      ['Potencia total instalada: ~3,8 kW (con todos los opcionales activos simultáneamente)','Potencia'],
+    ],
+    desc:'La línea eléctrica hasta el cuadro IP65 de ZARCA es responsabilidad del cliente (electricista homologado). Desde ahí, toda la instalación interna (equipos, focos, bomba de calor) está ejecutada por ZARCA y certificada según REBT.',
+    kpis:[['Tensión','230V AC 50Hz'],['Sección','4–6 mm² CU'],['Diferencial','30 mA tipo A'],['Potencia máx.','~3,8 kW']]},
+  4:{color:'#818cf8',title:'Acceso para Camión de Transporte',
+    items:[
+      ['Paso libre mínimo de 3,2 m de altura (gálibo) en toda la ruta de acceso','Altura'],
+      ['Paso libre mínimo de 2,8 m de anchura en toda la ruta de acceso','Anchura'],
+      ['Superficie de maniobra para camión plataforma de 12 m de longitud total','Longitud'],
+      ['El módulo se desplaza del camión a la losa con medios propios o grúa a acordar','Descarga'],
+      ['Si hay restricciones de acceso, comunicar a ZARCA con antelación para evaluar alternativas','Restricciones'],
+      ['No se requiere grúa si el acceso al lateral de la losa está despejado lateralmente','Grúa'],
+    ],
+    desc:'El módulo ZARCA Infinity 9m pesa aproximadamente 6.500 kg en vacío. El transporte se realiza en camión plataforma estándar. Es responsabilidad del cliente garantizar el acceso y comunicar cualquier restricción con al menos 2 semanas de antelación a la entrega.',
+    kpis:[['Altura gálibo','≥ 3,2 m',''],['Anchura paso','≥ 2,8 m'],['Peso módulo vacío','~6.500 kg'],['Plataforma','12 m longitud']]},
+  5:{color:'#34d399',title:'Permisos y Licencias Municipales',
+    items:[
+      ['La instalación de una piscina puede requerir licencia de obra menor o mayor según municipio','Licencia'],
+      ['Consultar en el Ayuntamiento el procedimiento específico del municipio del cliente','Consulta'],
+      ['En Cataluña: comunicar la instalación al Registro de Piscinas e Instalaciones Similares (ROPSI)','ROPSI'],
+      ['El módulo ZARCA tiene homologación como piscina desmontable · Puede afectar al tipo de permiso','Homologación'],
+      ['ZARCA puede proporcionar documentación técnica del módulo para acompañar la solicitud','Documentación'],
+      ['Los costes de permisos y tasas municipales son íntegramente a cargo del cliente','Costes'],
+    ],
+    desc:'ZARCA puede aportar la documentación técnica del módulo (ficha técnica, planos, certificaciones) para acompañar la solicitud de licencia. Sin embargo, la gestión, presentación y pago de tasas es responsabilidad exclusiva del propietario.',
+    kpis:[['Tipo licencia','Según municipio'],['Cataluña','ROPSI obligatorio'],['Documentación ZARCA','Disponible a petición'],['Costes permiso','A cargo cliente']]},
+  6:{color:'#60a5fa',title:'Conectividad Wi-Fi para Smart Pool',
+    items:[
+      ['El sistema Smart Pool requiere Wi-Fi 2.4 GHz en la zona de instalación','Frecuencia'],
+      ['Señal mínima recomendada: -70 dBm (cobertura media)','Señal'],
+      ['Si la zona carece de cobertura, instalar un repetidor Wi-Fi antes de la puesta en marcha','Repetidor'],
+      ['La centralita Smart Pool se conecta a la red doméstica del cliente (SSID + contraseña)','Red'],
+      ['La App Smart Pool es gratuita para iOS y Android · Sin cuotas mensuales','App'],
+      ['Si no hay Wi-Fi, los sistemas funcionan igualmente en modo manual desde el cuadro IP65','Sin Wi-Fi'],
+    ],
+    desc:'El Wi-Fi es necesario solo para el sistema Smart Pool (Cap.7). Sin conectividad, todos los demás sistemas funcionan correctamente desde el cuadro eléctrico IP65. El Wi-Fi aporta comodidad y monitorización remota, no es crítico para el funcionamiento de la piscina.',
+    kpis:[['Frecuencia','2.4 GHz'],['Señal mínima','-70 dBm'],['App','iOS + Android'],['Sin Wi-Fi','Funciona en manual']]},
+};
+
+let current=null;
+function expandReq(n){
+  Object.keys(reqData).forEach(k=>{
+    document.getElementById('req-'+k)?.classList.remove('active');
+  });
+  const panel=document.getElementById('expand-panel');
+  const content=document.getElementById('expand-content');
+  if(current===n){panel.classList.remove('open');current=null;return;}
+  document.getElementById('req-'+n).classList.add('active');
+  const d=reqData[n];
+  const itemsHtml=d.items.map(([txt,cat])=>`
+    <div class="req-detail-item">
+      <div class="rdi-icon" style="background:${d.color}22;color:${d.color}">${cat[0]}</div>
+      <span>${txt}</span>
+    </div>`).join('');
+  const kpisHtml=d.kpis.map(([l,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e293b;font-size:.82rem;">
+      <span style="color:#64748b">${l}</span>
+      <span style="font-family:'Space Mono',monospace;color:${d.color};font-weight:700">${v}</span>
+    </div>`).join('');
+  content.innerHTML=`
+    <div class="exp-grid">
+      <div class="exp-col">
+        <div class="exp-section-title">Requisitos detallados</div>
+        ${itemsHtml}
+      </div>
+      <div class="exp-col">
+        <div class="exp-section-title">Parámetros clave</div>
+        <div style="margin-bottom:14px">${kpisHtml}</div>
+        <div class="req-desc" style="border-color:${d.color}">${d.desc}</div>
+      </div>
+    </div>`;
+  panel.classList.add('open');
+  current=n;
+}
+</script>
+</body>
+</html>

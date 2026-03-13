@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribución de Zonas — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0a0e1a; color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; padding:30px 20px;
+  }
+  h1 {
+    font-family:'Space Mono',monospace; font-size:1.3rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#5eead4; margin-bottom:6px; text-align:center;
+  }
+  .subtitle { font-size:0.85rem; color:#64748b; margin-bottom:30px; text-align:center; }
+
+  .layout-wrap {
+    display:flex; gap:24px; width:100%; max-width:1200px;
+    align-items:flex-start; flex-wrap:wrap;
+  }
+
+  /* ── PLANO ISOMÉTRICO ── */
+  .plan-panel {
+    flex:1.4; min-width:360px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:28px 20px;
+  }
+  .plan-title {
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#64748b; margin-bottom:20px; text-align:center;
+  }
+
+  /* Vista superior del módulo */
+  .module-top-view {
+    position:relative; width:100%;
+    padding-bottom:35%; /* aspect ratio */
+    border:2px solid #1e3a5f; border-radius:8px;
+    overflow:hidden; background:#0a0e1a; cursor:default;
+  }
+  .module-inner {
+    position:absolute; inset:0;
+    display:flex;
+  }
+
+  /* Zonas clickables */
+  .zone {
+    position:relative; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    cursor:pointer; transition:all .3s; text-align:center;
+    border-right:1px solid rgba(255,255,255,.06);
+  }
+  .zone:hover { filter:brightness(1.4); }
+  .zone.active { filter:brightness(1.5); z-index:2; }
+  .zone-label {
+    font-family:'Space Mono',monospace; font-size:0.58rem;
+    letter-spacing:1px; text-transform:uppercase;
+    line-height:1.4; padding:0 6px;
+    font-weight:700;
+  }
+  .zone-icon { font-size:1.2rem; margin-bottom:4px; }
+  .zone-pct {
+    font-family:'Space Mono',monospace; font-size:0.55rem;
+    opacity:.6; margin-top:3px;
+  }
+
+  /* Medidas/dimensiones sobre el plano */
+  .dim-label {
+    position:absolute; font-family:'Space Mono',monospace;
+    font-size:0.6rem; color:#334155;
+  }
+
+  /* ── ALZADO LATERAL (vista corte) ── */
+  .section-view {
+    position:relative; width:100%;
+    padding-bottom:22%; margin-top:16px;
+    border:1px solid #1e293b; border-radius:8px;
+    overflow:hidden; background:#080c18;
+  }
+  .section-inner { position:absolute; inset:0; display:flex; }
+  .sv-zone {
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-end;
+    cursor:pointer; transition:all .3s; padding-bottom:8px;
+  }
+  .sv-zone:hover { filter:brightness(1.3); }
+  .sv-zone.active { filter:brightness(1.5); }
+  .sv-label {
+    font-family:'Space Mono',monospace; font-size:0.55rem;
+    color:rgba(255,255,255,.5); text-align:center;
+    padding:0 4px;
+  }
+  /* Líneas de profundidad en alzado */
+  .depth-line {
+    position:absolute; left:0; right:0;
+    border-top:1px dashed; font-size:0.55rem;
+    font-family:'Space Mono',monospace;
+    display:flex; align-items:flex-start;
+    padding-top:2px; padding-left:6px;
+  }
+
+  /* ── PANEL DETALLE ── */
+  .detail-panel {
+    width:320px; min-width:280px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:24px; position:sticky; top:20px;
+  }
+  .detail-empty {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; height:280px; color:#334155;
+    text-align:center; gap:12px;
+  }
+  .detail-content { display:none; }
+  .detail-content.visible { display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  .zone-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:5px 12px; border-radius:20px;
+    font-family:'Space Mono',monospace; font-size:0.68rem;
+    font-weight:700; letter-spacing:1px; margin-bottom:14px;
+  }
+  .zone-title { font-weight:700; font-size:1.05rem; margin-bottom:4px; }
+  .zone-sub { font-size:0.8rem; color:#64748b; margin-bottom:16px; }
+
+  .equipment-list { margin-bottom:16px; }
+  .equipment-list h4 {
+    font-family:'Space Mono',monospace; font-size:0.62rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#475569; margin-bottom:8px;
+  }
+  .equip-item {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 0; border-bottom:1px solid #1e293b;
+    font-size:0.82rem;
+  }
+  .equip-item:last-child { border-bottom:none; }
+  .equip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+  .zone-desc {
+    font-size:0.82rem; line-height:1.65; color:#94a3b8;
+    background:#131b2e; border-radius:8px; padding:12px;
+    border-left:3px solid;
+  }
+
+  .dim-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:8px; margin-bottom:16px;
+  }
+  .dim-card {
+    background:#131b2e; border-radius:8px; padding:10px;
+    text-align:center; border:1px solid #1e293b;
+  }
+  .dim-val {
+    font-family:'Space Mono',monospace; font-size:1rem;
+    font-weight:700; margin-bottom:2px;
+  }
+  .dim-lbl { font-size:0.68rem; color:#475569; }
+
+  /* Stats strip */
+  .stats-strip {
+    display:flex; gap:0; width:100%; max-width:1200px;
+    margin-top:20px; border-radius:12px; overflow:hidden;
+    border:1px solid #1e293b;
+  }
+  .stat-item {
+    flex:1; padding:16px 10px; text-align:center;
+    background:#0f1629; border-right:1px solid #1e293b;
+    transition:background .3s;
+  }
+  .stat-item:last-child { border-right:none; }
+  .stat-item:hover { background:#131b2e; }
+  .stat-val {
+    font-family:'Space Mono',monospace; font-size:1.3rem;
+    font-weight:700; margin-bottom:4px;
+  }
+  .stat-lbl { font-size:0.72rem; color:#64748b; }
+</style>
+</head>
+<body>
+
+<h1>Distribución de Zonas</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — Vista superior e isométrica del módulo · Ref. ZP-9M-PREM-2026-001</p>
+
+<div class="layout-wrap">
+
+  <!-- PLANO -->
+  <div class="plan-panel">
+    <div class="plan-title">Vista Superior — Planta del Módulo 9,0 × 2,44 m</div>
+
+    <!-- Vista superior -->
+    <div class="module-top-view">
+      <div class="module-inner">
+
+        <!-- ZONA A: Sala Técnica (izq ~15%) -->
+        <div class="zone" id="zone-a" onclick="showZone('a')"
+          style="flex:1.4;background:rgba(201,168,76,.12);">
+          <div class="zone-icon">⚙</div>
+          <div class="zone-label" style="color:#C9A84C;">SALA<br>TÉCNICA</div>
+          <div class="zone-pct" style="color:#C9A84C;">~1,5 m</div>
+        </div>
+
+        <!-- ZONA B: Escalera de acceso (~10%) -->
+        <div class="zone" id="zone-b" onclick="showZone('b')"
+          style="flex:.9;background:rgba(52,211,153,.1);">
+          <div class="zone-icon">↓</div>
+          <div class="zone-label" style="color:#34d399;">ESC.<br>ACCESO</div>
+          <div class="zone-pct" style="color:#34d399;">~1 m</div>
+        </div>
+
+        <!-- ZONA C: Vaso de natación (central ~55%) -->
+        <div class="zone" id="zone-c" onclick="showZone('c')"
+          style="flex:4.5;background:rgba(14,116,144,.2);">
+          <div class="zone-icon">◈</div>
+          <div class="zone-label" style="color:#22d3ee;">VASO DE NATACIÓN<br>GRESITE PREMIUM</div>
+          <div class="zone-pct" style="color:#22d3ee;">~5,5 m zona nado</div>
+        </div>
+
+        <!-- ZONA D: Recogedor persiana (~15%) -->
+        <div class="zone" id="zone-d" onclick="showZone('d')"
+          style="flex:1.2;background:rgba(99,102,241,.15);">
+          <div class="zone-icon">⬛</div>
+          <div class="zone-label" style="color:#818cf8;">RECOGEDOR<br>PERSIANA</div>
+          <div class="zone-pct" style="color:#818cf8;">~1 m</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ALZADO / CORTE LATERAL -->
+    <div style="margin-top:10px;">
+      <div class="plan-title" style="margin-bottom:8px;margin-top:4px;">Alzado interior — Sección corte longitudinal</div>
+      <div class="section-view">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;">
+          <!-- Líneas de profundidad -->
+          <div class="depth-line" style="bottom:70%;border-color:rgba(34,211,238,.3);color:rgba(34,211,238,.5);">
+            — Nivel agua
+          </div>
+          <div class="depth-line" style="bottom:40%;border-color:rgba(96,165,250,.2);color:rgba(96,165,250,.4);">
+            — Zona nado (−0,9 m)
+          </div>
+          <div class="depth-line" style="bottom:10%;border-color:rgba(201,168,76,.2);color:rgba(201,168,76,.4);">
+            — Fondo (−1,4 m)
+          </div>
+          <!-- Las zonas como columnas en el alzado -->
+          <div class="section-inner" style="bottom:0;top:0;">
+            <div class="sv-zone active" id="sv-a" onclick="showZone('a')"
+              style="flex:1.4;background:rgba(201,168,76,.1);">
+              <div class="sv-label" style="color:#C9A84C;">SALA TÉCNICA<br>Equipo</div>
+            </div>
+            <div class="sv-zone" id="sv-b" onclick="showZone('b')"
+              style="flex:.9;background:rgba(52,211,153,.08);">
+              <div class="sv-label" style="color:#34d399;">Escalera<br>6 peldaños</div>
+            </div>
+            <div class="sv-zone" id="sv-c" onclick="showZone('c')"
+              style="flex:4.5;background:rgba(14,116,144,.15);">
+              <div class="sv-label" style="color:#22d3ee;">Vaso · Gresite · Focos LED</div>
+            </div>
+            <div class="sv-zone" id="sv-d" onclick="showZone('d')"
+              style="flex:1.2;background:rgba(99,102,241,.1);">
+              <div class="sv-label" style="color:#818cf8;">Persiana<br>Motor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zona tarima perimetral -->
+    <div onclick="showZone('e')" id="zone-e"
+      style="margin-top:8px;background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.2);
+             border-radius:8px;padding:12px;cursor:pointer;transition:all .3s;text-align:center;"
+      onmouseover="this.style.background='rgba(196,181,253,.15)'"
+      onmouseout="this.style.background='rgba(196,181,253,.08)'">
+      <span style="font-family:'Space Mono',monospace;font-size:0.68rem;color:#c4b5fd;letter-spacing:2px;">
+        ░ TARIMA PERIMETRAL WPC — 16 m² · Coronación 40 cm + Plataforma acceso
+      </span>
+    </div>
+
+  </div>
+
+  <!-- DETALLE -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div style="font-size:2.5rem;">◎</div>
+      <p style="font-size:0.82rem;line-height:1.6;">Haz clic en cualquier<br>zona del plano para ver<br>sus especificaciones</p>
+    </div>
+
+    <!-- ZONA A: Sala Técnica -->
+    <div class="detail-content" id="detail-a">
+      <div class="zone-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">⚙ ZONA A</div>
+      <div class="zone-title" style="color:#C9A84C;">Sala Técnica</div>
+      <div class="zone-sub">Compartimento estanco · Acceso tipo escotilla · ~1,5 m</div>
+      <div class="dim-grid">
+        <div class="dim-card">
+          <div class="dim-val" style="color:#C9A84C;">~1,5 m</div>
+          <div class="dim-lbl">Longitud</div>
+        </div>
+        <div class="dim-card">
+          <div class="dim-val" style="color:#C9A84C;">2,2 m</div>
+          <div class="dim-lbl">Anchura</div>
+        </div>
+      </div>
+      <div class="equipment-list">
+        <h4>Equipos instalados</h4>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Bomba de filtración B-01</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Filtro de vidrio activo Ø600mm</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Válvula de 6 vías</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Cuadro eléctrico CE-01 IP65</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Cámara UV · Dosificadores pH/Cl</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#C9A84C"></div>Clorador salino · Manifold PVC</div>
+      </div>
+      <div class="zone-desc" style="border-color:#C9A84C;">
+        Compartimento totalmente aislado del vaso. Acceso mediante puerta-escotilla estanca. Toda la hidráulica y electrónica quedan protegidas y accesibles para mantenimiento sin necesidad de vaciar la piscina.
+      </div>
+    </div>
+
+    <!-- ZONA B: Escalera -->
+    <div class="detail-content" id="detail-b">
+      <div class="zone-badge" style="background:rgba(52,211,153,.15);color:#34d399;">↓ ZONA B</div>
+      <div class="zone-title" style="color:#34d399;">Escalera de Acceso</div>
+      <div class="zone-sub">6 peldaños WEDI macizo · Antideslizante · ~1 m</div>
+      <div class="dim-grid">
+        <div class="dim-card">
+          <div class="dim-val" style="color:#34d399;">6</div>
+          <div class="dim-lbl">Peldaños</div>
+        </div>
+        <div class="dim-card">
+          <div class="dim-val" style="color:#34d399;">WEDI</div>
+          <div class="dim-lbl">Material</div>
+        </div>
+      </div>
+      <div class="equipment-list">
+        <h4>Elementos integrados</h4>
+        <div class="equip-item"><div class="equip-dot" style="background:#34d399"></div>2× Boquillas de impulsión (retorno)</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#34d399"></div>1× Boquilla contracorriente (cañón)</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#34d399"></div>Botón neumático activación (IP)</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#34d399"></div>Superficie antideslizante gresite</div>
+      </div>
+      <div class="zone-desc" style="border-color:#34d399;">
+        Escalera fabricada en panel WEDI macizo, impermeable y de alta resistencia a compresión. Integra las bocas hidráulicas principales. El botón neumático garantiza activación sin riesgo eléctrico en zona húmeda.
+      </div>
+    </div>
+
+    <!-- ZONA C: Vaso -->
+    <div class="detail-content" id="detail-c">
+      <div class="zone-badge" style="background:rgba(14,116,144,.2);color:#22d3ee;">◈ ZONA C</div>
+      <div class="zone-title" style="color:#22d3ee;">Vaso de Natación</div>
+      <div class="zone-sub">Zona principal · Gresite vitrificado premium · ~5,5 m</div>
+      <div class="dim-grid">
+        <div class="dim-card">
+          <div class="dim-val" style="color:#22d3ee;">33,5 m³</div>
+          <div class="dim-lbl">Capacidad</div>
+        </div>
+        <div class="dim-card">
+          <div class="dim-val" style="color:#22d3ee;">1,4 m</div>
+          <div class="dim-lbl">Profundidad</div>
+        </div>
+      </div>
+      <div class="equipment-list">
+        <h4>Elementos del vaso</h4>
+        <div class="equip-item"><div class="equip-dot" style="background:#22d3ee"></div>4× Focos LED subacuáticos RGB</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#22d3ee"></div>Skimmer de superficie + prefiltro</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#22d3ee"></div>Boquilla de succión manual</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#22d3ee"></div>Drenaje principal DN50</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#22d3ee"></div>Gresite vitrificado 58 m²</div>
+      </div>
+      <div class="zone-desc" style="border-color:#22d3ee;">
+        El corazón del módulo. 33,5 m³ de agua perfectamente equilibrada. Los 4 focos LED de 12V AC garantizan total seguridad en contacto con agua. El skimmer recoge detritos de superficie de forma continua y automática.
+      </div>
+    </div>
+
+    <!-- ZONA D: Persiana -->
+    <div class="detail-content" id="detail-d">
+      <div class="zone-badge" style="background:rgba(99,102,241,.15);color:#818cf8;">⬛ ZONA D</div>
+      <div class="zone-title" style="color:#818cf8;">Recogedor de Persiana</div>
+      <div class="zone-sub">Motor tubular IP68 · Lamas policarbonato/aluminio · ~1 m</div>
+      <div class="dim-grid">
+        <div class="dim-card">
+          <div class="dim-val" style="color:#818cf8;">IP68</div>
+          <div class="dim-lbl">Protección motor</div>
+        </div>
+        <div class="dim-card">
+          <div class="dim-val" style="color:#818cf8;">-80%</div>
+          <div class="dim-lbl">Ahorro energético</div>
+        </div>
+      </div>
+      <div class="equipment-list">
+        <h4>Sistema persiana</h4>
+        <div class="equip-item"><div class="equip-dot" style="background:#818cf8"></div>Motor tubular 230V IP68</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#818cf8"></div>Lamas policarbonato/aluminio</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#818cf8"></div>Mando hombre muerto IP65</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#818cf8"></div>Guías laterales ancladas al módulo</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#818cf8"></div>Normativa seguridad infantil</div>
+      </div>
+      <div class="zone-desc" style="border-color:#818cf8;">
+        La persiana elevada protege el vaso cuando no está en uso, reduciendo la evaporación y el consumo de la bomba de calor hasta un 80%. El sistema de hombre muerto exige supervisión visual directa durante el movimiento, cumpliendo estrictamente la normativa de seguridad infantil.
+      </div>
+    </div>
+
+    <!-- ZONA E: Tarima -->
+    <div class="detail-content" id="detail-e">
+      <div class="zone-badge" style="background:rgba(196,181,253,.15);color:#c4b5fd;">░ ZONA E</div>
+      <div class="zone-title" style="color:#c4b5fd;">Tarima Perimetral</div>
+      <div class="zone-sub">Madera WPC tecnológica o natural · 16 m² totales</div>
+      <div class="dim-grid">
+        <div class="dim-card">
+          <div class="dim-val" style="color:#c4b5fd;">16 m²</div>
+          <div class="dim-lbl">Superficie total</div>
+        </div>
+        <div class="dim-card">
+          <div class="dim-val" style="color:#c4b5fd;">40 cm</div>
+          <div class="dim-lbl">Anchura coronación</div>
+        </div>
+      </div>
+      <div class="equipment-list">
+        <h4>Composición</h4>
+        <div class="equip-item"><div class="equip-dot" style="background:#c4b5fd"></div>Coronación interior + exterior (40 cm)</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#c4b5fd"></div>Plataforma de acceso lateral (20 cm)</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#c4b5fd"></div>Tapa acceso skimmer integrada</div>
+        <div class="equip-item"><div class="equip-dot" style="background:#c4b5fd"></div>Madera WPC o natural a elegir</div>
+      </div>
+      <div class="zone-desc" style="border-color:#c4b5fd;">
+        La tarima perimetral define la estética exterior del módulo. La madera WPC ofrece resistencia a la intemperie, sin tratamiento anual. La madera natural aporta calidez pero requiere mantenimiento periódico. En ambos casos, el acabado es de alto standing e integra la escotilla de acceso al skimmer.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item" onclick="showZone('a')">
+    <div class="stat-val" style="color:#C9A84C;">~1,5 m</div>
+    <div class="stat-lbl">Sala Técnica</div>
+  </div>
+  <div class="stat-item" onclick="showZone('c')">
+    <div class="stat-val" style="color:#22d3ee;">33,5 m³</div>
+    <div class="stat-lbl">Capacidad vaso</div>
+  </div>
+  <div class="stat-item" onclick="showZone('c')">
+    <div class="stat-val" style="color:#22d3ee;">1,4 m</div>
+    <div class="stat-lbl">Profundidad</div>
+  </div>
+  <div class="stat-item" onclick="showZone('e')">
+    <div class="stat-val" style="color:#c4b5fd;">16 m²</div>
+    <div class="stat-lbl">Tarima WPC</div>
+  </div>
+  <div class="stat-item" onclick="showZone('b')">
+    <div class="stat-val" style="color:#34d399;">6</div>
+    <div class="stat-lbl">Peldaños WEDI</div>
+  </div>
+  <div class="stat-item" onclick="showZone('d')">
+    <div class="stat-val" style="color:#818cf8;">-80%</div>
+    <div class="stat-lbl">Ahorro energético persiana</div>
+  </div>
+</div>
+
+<script>
+let currentZone = null;
+function showZone(z) {
+  ['a','b','c','d','e'].forEach(id => {
+    const el = document.getElementById('detail-'+id);
+    if(el) el.classList.remove('visible');
+    const zone = document.getElementById('zone-'+id);
+    if(zone) zone.classList.remove('active');
+    const sv = document.getElementById('sv-'+id);
+    if(sv) sv.classList.remove('active');
+  });
+  document.getElementById('detail-empty').style.display='none';
+  const det = document.getElementById('detail-'+z);
+  if(det) det.classList.add('visible');
+  const zone = document.getElementById('zone-'+z);
+  if(zone) zone.classList.add('active');
+  const sv = document.getElementById('sv-'+z);
+  if(sv) sv.classList.add('active');
+  currentZone = z;
+}
+// Auto-tour
+const zones = ['a','b','c','d','e'];
+let idx=0;
+const tour = setInterval(()=>{
+  if(currentZone){clearInterval(tour);return;}
+  showZone(zones[idx]);
+  idx=(idx+1)%zones.length;
+},2000);
+</script>
+</body>
+</html>

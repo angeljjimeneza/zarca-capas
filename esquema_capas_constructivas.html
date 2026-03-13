@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capas Constructivas — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0a0e1a; color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; padding:30px 20px;
+  }
+  h1 {
+    font-family:'Space Mono',monospace; font-size:1.3rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#C9A84C; margin-bottom:6px; text-align:center;
+  }
+  .subtitle { font-size:0.85rem; color:#64748b; margin-bottom:30px; text-align:center; }
+
+  .main-wrap {
+    display:flex; gap:24px; width:100%; max-width:1200px;
+    align-items:flex-start; flex-wrap:wrap;
+  }
+
+  /* ─── IZQUIERDA: stack de capas ─── */
+  .stack-panel {
+    flex:1; min-width:320px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:28px 24px;
+  }
+  .stack-title {
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#64748b; margin-bottom:20px; text-align:center;
+  }
+  .layer {
+    position:relative; border-radius:8px; cursor:pointer;
+    transition:all .3s ease; margin-bottom:5px;
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px; border:1px solid transparent;
+    overflow:hidden;
+  }
+  .layer::before {
+    content:''; position:absolute; inset:0;
+    opacity:0; transition:opacity .3s;
+  }
+  .layer:hover::before, .layer.active::before { opacity:1; }
+  .layer-num {
+    font-family:'Space Mono',monospace; font-size:1.4rem;
+    font-weight:700; min-width:36px; text-align:center;
+    transition:transform .3s;
+  }
+  .layer:hover .layer-num, .layer.active .layer-num { transform:scale(1.15); }
+  .layer-info { flex:1; }
+  .layer-name {
+    font-weight:700; font-size:0.92rem; margin-bottom:2px;
+    transition:color .3s;
+  }
+  .layer-sub { font-size:0.76rem; color:#64748b; transition:color .3s; }
+  .layer-thickness {
+    font-family:'Space Mono',monospace; font-size:0.72rem;
+    padding:3px 8px; border-radius:20px; white-space:nowrap;
+    font-weight:700;
+  }
+  .layer-arrow {
+    font-size:0.9rem; opacity:0; transform:translateX(-6px);
+    transition:all .3s;
+  }
+  .layer:hover .layer-arrow, .layer.active .layer-arrow {
+    opacity:1; transform:translateX(0);
+  }
+
+  /* Colores de capas */
+  .l1 { background:rgba(55,65,81,.6); }
+  .l1::before { background:rgba(100,116,139,.15); }
+  .l1 .layer-num { color:#94a3b8; }
+  .l1 .layer-thickness { background:rgba(100,116,139,.2); color:#94a3b8; }
+  .l1.active, .l1:hover { border-color:#64748b; }
+
+  .l2 { background:rgba(30,41,59,.8); }
+  .l2::before { background:rgba(201,168,76,.08); }
+  .l2 .layer-num { color:#C9A84C; }
+  .l2 .layer-thickness { background:rgba(201,168,76,.15); color:#C9A84C; }
+  .l2.active, .l2:hover { border-color:#C9A84C; }
+
+  .l3 { background:rgba(27,62,92,.5); }
+  .l3::before { background:rgba(74,191,204,.1); }
+  .l3 .layer-num { color:#4ABFCC; }
+  .l3 .layer-thickness { background:rgba(74,191,204,.15); color:#4ABFCC; }
+  .l3.active, .l3:hover { border-color:#4ABFCC; }
+
+  .l4 { background:rgba(15,22,41,.9); }
+  .l4::before { background:rgba(99,102,241,.1); }
+  .l4 .layer-num { color:#818cf8; }
+  .l4 .layer-thickness { background:rgba(99,102,241,.15); color:#818cf8; }
+  .l4.active, .l4:hover { border-color:#818cf8; }
+
+  .l5 { background:rgba(6,78,59,.4); }
+  .l5::before { background:rgba(52,211,153,.1); }
+  .l5 .layer-num { color:#34d399; }
+  .l5 .layer-thickness { background:rgba(52,211,153,.15); color:#34d399; }
+  .l5.active, .l5:hover { border-color:#34d399; }
+
+  .l6 { background:rgba(30,64,175,.3); }
+  .l6::before { background:rgba(96,165,250,.1); }
+  .l6 .layer-num { color:#60a5fa; }
+  .l6 .layer-thickness { background:rgba(96,165,250,.15); color:#60a5fa; }
+  .l6.active, .l6:hover { border-color:#60a5fa; }
+
+  .l7 { background:rgba(88,28,135,.3); }
+  .l7::before { background:rgba(196,181,253,.1); }
+  .l7 .layer-num { color:#c4b5fd; }
+  .l7 .layer-thickness { background:rgba(196,181,253,.15); color:#c4b5fd; }
+  .l7.active, .l7:hover { border-color:#c4b5fd; }
+
+  /* ─── DERECHA: detalle ─── */
+  .detail-panel {
+    width:340px; min-width:300px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:28px 24px;
+    position:sticky; top:20px;
+  }
+  .detail-empty {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; height:300px; color:#334155;
+    text-align:center; gap:12px;
+  }
+  .detail-empty .icon { font-size:2.5rem; }
+  .detail-empty p { font-size:0.82rem; line-height:1.6; }
+  .detail-content { display:none; }
+  .detail-content.visible { display:block; }
+
+  .detail-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 14px; border-radius:20px;
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    font-weight:700; letter-spacing:1px; margin-bottom:16px;
+  }
+  .detail-title {
+    font-weight:700; font-size:1.1rem; margin-bottom:6px; line-height:1.3;
+  }
+  .detail-sub { font-size:0.82rem; color:#64748b; margin-bottom:20px; }
+
+  .detail-section { margin-bottom:18px; }
+  .detail-section h4 {
+    font-family:'Space Mono',monospace; font-size:0.65rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#475569; margin-bottom:10px;
+  }
+  .detail-prop {
+    display:flex; justify-content:space-between;
+    align-items:center; padding:7px 0;
+    border-bottom:1px solid #1e293b; font-size:0.82rem;
+  }
+  .detail-prop:last-child { border-bottom:none; }
+  .detail-prop span:first-child { color:#94a3b8; }
+  .detail-prop span:last-child { font-weight:600; }
+
+  .detail-desc {
+    font-size:0.83rem; line-height:1.65; color:#94a3b8;
+    background:#131b2e; border-radius:8px; padding:14px;
+    border-left:3px solid;
+  }
+
+  /* ─── VISUAL CROSS-SECTION ─── */
+  .cross-section {
+    width:100%; max-width:1200px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:28px 24px; margin-top:24px;
+  }
+  .cross-title {
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#64748b; margin-bottom:20px; text-align:center;
+  }
+  .cross-wrap {
+    display:flex; align-items:stretch; border-radius:8px;
+    overflow:hidden; height:80px; border:1px solid #1e293b;
+  }
+  .cross-layer {
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    font-size:0.65rem; font-weight:700; text-align:center;
+    transition:all .3s; cursor:pointer; position:relative;
+    overflow:hidden;
+  }
+  .cross-layer:hover { filter:brightness(1.3); transform:scaleY(1.05); z-index:2; }
+  .cross-layer span { line-height:1.2; padding:0 4px; }
+  .cross-layer .mm { font-family:'Space Mono',monospace; font-size:0.6rem; margin-top:2px; }
+
+  /* Barra de proceso */
+  .process-bar {
+    width:100%; max-width:1200px;
+    display:flex; gap:0; margin-top:24px;
+    border-radius:12px; overflow:hidden;
+  }
+  .process-step {
+    flex:1; padding:14px 10px; text-align:center;
+    position:relative; cursor:pointer;
+    transition:all .3s; font-size:0.78rem;
+  }
+  .process-step:not(:last-child)::after {
+    content:''; position:absolute; right:-1px; top:20%; bottom:20%;
+    width:2px; background:rgba(255,255,255,.1);
+  }
+  .process-step:hover { filter:brightness(1.2); }
+  .process-step .ps-num {
+    font-family:'Space Mono',monospace; font-size:1rem;
+    font-weight:700; margin-bottom:4px;
+  }
+  .process-step .ps-label { font-size:0.72rem; line-height:1.3; color:rgba(255,255,255,.7); }
+
+  /* Progress indicator */
+  .progress-ring { width:180px; margin:0 auto 20px; position:relative; }
+  .progress-ring svg { transform:rotate(-90deg); }
+  .progress-ring .ring-bg { fill:none; stroke:#1e293b; stroke-width:8; }
+  .progress-ring .ring-fill {
+    fill:none; stroke-width:8; stroke-linecap:round;
+    transition:stroke-dashoffset .8s ease;
+  }
+  .progress-ring .ring-text {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace;
+  }
+  .progress-ring .ring-pct { font-size:1.4rem; font-weight:700; }
+  .progress-ring .ring-lbl { font-size:0.65rem; color:#64748b; text-transform:uppercase; letter-spacing:1px; }
+</style>
+</head>
+<body>
+
+<h1>Capas Constructivas</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — Ingeniería de Contenedor Marítimo Naval · Ref. ZP-9M-PREM-2026-001</p>
+
+<div class="main-wrap">
+  <!-- STACK -->
+  <div class="stack-panel">
+    <div class="stack-title">Sección transversal — 7 capas de ingeniería</div>
+
+    <div class="layer l1" onclick="showDetail(1)" id="layer-1">
+      <div class="layer-num">1</div>
+      <div class="layer-info">
+        <div class="layer-name">Chasis Naval Cor-Ten</div>
+        <div class="layer-sub">Acero de alta resistencia atmosférica</div>
+      </div>
+      <div class="layer-thickness">6 mm</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l2" onclick="showDetail(2)" id="layer-2">
+      <div class="layer-num">2</div>
+      <div class="layer-info">
+        <div class="layer-name">Granallado SA2½</div>
+        <div class="layer-sub">Preparación de superficie para tratamiento</div>
+      </div>
+      <div class="layer-thickness">Proceso</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l3" onclick="showDetail(3)" id="layer-3">
+      <div class="layer-num">3</div>
+      <div class="layer-info">
+        <div class="layer-name">Imprimación Epoxy</div>
+        <div class="layer-sub">Primera barrera anticorrosión activa</div>
+      </div>
+      <div class="layer-thickness">80 µm</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l4" onclick="showDetail(4)" id="layer-4">
+      <div class="layer-num">4</div>
+      <div class="layer-info">
+        <div class="layer-name">Pintura Poliuretano C5M</div>
+        <div class="layer-sub">Certificación offshore · Protección marina</div>
+      </div>
+      <div class="layer-thickness">120 µm</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l5" onclick="showDetail(5)" id="layer-5">
+      <div class="layer-num">5</div>
+      <div class="layer-info">
+        <div class="layer-name">Costillaje IPE/RHS</div>
+        <div class="layer-sub">Refuerzo estructural soldado · Absorción hidrostática</div>
+      </div>
+      <div class="layer-thickness">963 kg</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l6" onclick="showDetail(6)" id="layer-6">
+      <div class="layer-num">6</div>
+      <div class="layer-info">
+        <div class="layer-name">Sistema WEDI</div>
+        <div class="layer-sub">Placas estructurales estancas · Base + Paredes</div>
+      </div>
+      <div class="layer-thickness">58 m²</div>
+      <div class="layer-arrow">→</div>
+    </div>
+
+    <div class="layer l7" onclick="showDetail(7)" id="layer-7">
+      <div class="layer-num">7</div>
+      <div class="layer-info">
+        <div class="layer-name">Gresite Vitrificado Premium</div>
+        <div class="layer-sub">Acabado interior · Color a elección del cliente</div>
+      </div>
+      <div class="layer-thickness">58 m²</div>
+      <div class="layer-arrow">→</div>
+    </div>
+  </div>
+
+  <!-- DETALLE -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="icon">◎</div>
+      <p>Selecciona una capa<br>para ver sus especificaciones<br>técnicas detalladas</p>
+    </div>
+
+    <!-- Detalle 1 -->
+    <div class="detail-content" id="detail-1">
+      <div class="detail-badge" style="background:rgba(100,116,139,.15);color:#94a3b8;">
+        <span>■</span> CAPA 1 — BASE ESTRUCTURAL
+      </div>
+      <div class="detail-title" style="color:#94a3b8;">Chasis Naval Cor-Ten</div>
+      <div class="detail-sub">Acero de alta resistencia atmosférica · Estándar naval</div>
+      <div class="detail-section">
+        <h4>Especificaciones</h4>
+        <div class="detail-prop"><span>Material</span><span style="color:#94a3b8">Acero Cor-Ten A/B</span></div>
+        <div class="detail-prop"><span>Espesor pared</span><span style="color:#94a3b8">6 mm nominal</span></div>
+        <div class="detail-prop"><span>Formato base</span><span style="color:#94a3b8">Contenedor 40' ISO</span></div>
+        <div class="detail-prop"><span>Dimensiones</span><span style="color:#94a3b8">12,19m × 2,44m × 2,59m</span></div>
+        <div class="detail-prop"><span>Capacidad carga</span><span style="color:#94a3b8">30.400 kg (máx.)</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#64748b;">
+        El acero Cor-Ten desarrolla una pátina de óxido estable que protege el núcleo metálico. Resistencia a la tracción de 480-550 MPa, superior al acero estructural convencional. Base certificada para resistir la presión hidrostática de 33,5 m³ de agua.
+      </div>
+    </div>
+
+    <!-- Detalle 2 -->
+    <div class="detail-content" id="detail-2">
+      <div class="detail-badge" style="background:rgba(201,168,76,.15);color:#C9A84C;">
+        <span>◈</span> CAPA 2 — PREPARACIÓN
+      </div>
+      <div class="detail-title" style="color:#C9A84C;">Granallado SA2½</div>
+      <div class="detail-sub">Preparación de superficie según norma ISO 8501-1</div>
+      <div class="detail-section">
+        <h4>Proceso</h4>
+        <div class="detail-prop"><span>Norma</span><span style="color:#C9A84C">ISO 8501-1 SA2½</span></div>
+        <div class="detail-prop"><span>Método</span><span style="color:#C9A84C">Granallado abrasivo</span></div>
+        <div class="detail-prop"><span>Perfil rugosidad</span><span style="color:#C9A84C">Rz 40–70 µm</span></div>
+        <div class="detail-prop"><span>Grado limpieza</span><span style="color:#C9A84C">Muy minucioso</span></div>
+        <div class="detail-prop"><span>Vida útil ganada</span><span style="color:#C9A84C">+25 años protección</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#C9A84C;">
+        El granallado SA2½ elimina toda la calamina, herrumbre y contaminantes, dejando la superficie metalizada con rugosidad controlada para máxima adherencia de las capas posteriores. Proceso crítico para garantizar la eficacia del sistema C5M.
+      </div>
+    </div>
+
+    <!-- Detalle 3 -->
+    <div class="detail-content" id="detail-3">
+      <div class="detail-badge" style="background:rgba(74,191,204,.15);color:#4ABFCC;">
+        <span>◉</span> CAPA 3 — PROTECCIÓN
+      </div>
+      <div class="detail-title" style="color:#4ABFCC;">Imprimación Epoxy</div>
+      <div class="detail-sub">Primera barrera anticorrosión activa · Alta adherencia</div>
+      <div class="detail-section">
+        <h4>Especificaciones</h4>
+        <div class="detail-prop"><span>Tipo</span><span style="color:#4ABFCC">Epoxy bicomponente</span></div>
+        <div class="detail-prop"><span>Espesor seco</span><span style="color:#4ABFCC">80 µm mínimo</span></div>
+        <div class="detail-prop"><span>Adherencia</span><span style="color:#4ABFCC">&gt; 7 MPa</span></div>
+        <div class="detail-prop"><span>Resistencia sal</span><span style="color:#4ABFCC">1.000h sal spray</span></div>
+        <div class="detail-prop"><span>Tiempo secado</span><span style="color:#4ABFCC">4h recobrimiento</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#4ABFCC;">
+        Imprimación epoxy con pigmentos inhibidores de corrosión. Actúa como puente de adherencia entre el acero granallado y la capa de acabado poliuretano. Proporciona la primera barrera activa frente a humedad y cloruros.
+      </div>
+    </div>
+
+    <!-- Detalle 4 -->
+    <div class="detail-content" id="detail-4">
+      <div class="detail-badge" style="background:rgba(99,102,241,.15);color:#818cf8;">
+        <span>★</span> CAPA 4 — CERTIFICACIÓN C5M
+      </div>
+      <div class="detail-title" style="color:#818cf8;">Pintura Poliuretano C5M</div>
+      <div class="detail-sub">Certificación offshore · Entornos marinos agresivos · ISO 12944-6</div>
+      <div class="detail-section">
+        <h4>Certificación</h4>
+        <div class="detail-prop"><span>Norma</span><span style="color:#818cf8">ISO 12944-6 C5M</span></div>
+        <div class="detail-prop"><span>Espesor seco</span><span style="color:#818cf8">120 µm mínimo</span></div>
+        <div class="detail-prop"><span>Categoría</span><span style="color:#818cf8">Offshore / Marina</span></div>
+        <div class="detail-prop"><span>Durabilidad</span><span style="color:#818cf8">Alta (H: &gt;15 años)</span></div>
+        <div class="detail-prop"><span>Resistencia UV</span><span style="color:#818cf8">Excelente</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#818cf8;">
+        La categoría C5M es la máxima protección anticorrosión definida por ISO 12944. Diseñada para entornos marinos de alta agresividad (offshore). Garantiza la integridad del chasis exterior durante toda la vida útil del producto, independientemente de las condiciones climáticas de instalación.
+      </div>
+    </div>
+
+    <!-- Detalle 5 -->
+    <div class="detail-content" id="detail-5">
+      <div class="detail-badge" style="background:rgba(52,211,153,.15);color:#34d399;">
+        <span>⬡</span> CAPA 5 — REFUERZO
+      </div>
+      <div class="detail-title" style="color:#34d399;">Costillaje IPE/RHS Soldado</div>
+      <div class="detail-sub">Ingeniería de refuerzo estructural · Absorción presión hidrostática</div>
+      <div class="detail-section">
+        <h4>Datos estructurales</h4>
+        <div class="detail-prop"><span>Peso total acero</span><span style="color:#34d399">963,50 kg</span></div>
+        <div class="detail-prop"><span>Perfil vertical</span><span style="color:#34d399">IPE / RHS soldado</span></div>
+        <div class="detail-prop"><span>Presión hidrostática</span><span style="color:#34d399">33,5 m³ agua</span></div>
+        <div class="detail-prop"><span>Emparrillado suelo</span><span style="color:#34d399">Soldado estructural</span></div>
+        <div class="detail-prop"><span>Capacidad portante</span><span style="color:#34d399">&gt; 500 kg/m²</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#34d399;">
+        El costillaje interior transforma el contenedor estándar en un vaso de piscina estructuralmente apto. Vigas verticales y horizontales soldadas forman una jaula rígida que distribuye la carga hidrostática del agua en todo el perímetro del chasis, eliminando riesgo de deformación.
+      </div>
+    </div>
+
+    <!-- Detalle 6 -->
+    <div class="detail-content" id="detail-6">
+      <div class="detail-badge" style="background:rgba(96,165,250,.15);color:#60a5fa;">
+        <span>◧</span> CAPA 6 — ESTANQUEIDAD
+      </div>
+      <div class="detail-title" style="color:#60a5fa;">Sistema WEDI</div>
+      <div class="detail-sub">Impermeabilización estructural · Garantía estanqueidad 10 años</div>
+      <div class="detail-section">
+        <h4>Sistema WEDI</h4>
+        <div class="detail-prop"><span>Superficie</span><span style="color:#60a5fa">58 m² (base + paredes)</span></div>
+        <div class="detail-prop"><span>Material placa</span><span style="color:#60a5fa">XPS + fibra de vidrio</span></div>
+        <div class="detail-prop"><span>Impermeabilidad</span><span style="color:#60a5fa">100% estructural</span></div>
+        <div class="detail-prop"><span>Resistencia compresión</span><span style="color:#60a5fa">&gt; 300 kPa</span></div>
+        <div class="detail-prop"><span>Garantía</span><span style="color:#60a5fa">10 años estanqueidad</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#60a5fa;">
+        Las placas WEDI son el estándar premium para impermeabilización de vasos en contacto permanente con agua. El sistema se adhiere directamente al costillaje metálico y actúa como capa estructural impermeable, independiente del revestimiento final. Sin WEDI no hay garantía de estanqueidad.
+      </div>
+    </div>
+
+    <!-- Detalle 7 -->
+    <div class="detail-content" id="detail-7">
+      <div class="detail-badge" style="background:rgba(196,181,253,.15);color:#c4b5fd;">
+        <span>◈</span> CAPA 7 — ACABADO FINAL
+      </div>
+      <div class="detail-title" style="color:#c4b5fd;">Gresite Vitrificado Premium</div>
+      <div class="detail-sub">Revestimiento interior · Acabado de alto standing · Color a elección</div>
+      <div class="detail-section">
+        <h4>Especificaciones</h4>
+        <div class="detail-prop"><span>Superficie</span><span style="color:#c4b5fd">58 m² completos</span></div>
+        <div class="detail-prop"><span>Tipo</span><span style="color:#c4b5fd">Gresite vitrificado</span></div>
+        <div class="detail-prop"><span>Formato tesela</span><span style="color:#c4b5fd">25×25 mm / 50×50 mm</span></div>
+        <div class="detail-prop"><span>Color</span><span style="color:#c4b5fd">A elegir (catálogo)</span></div>
+        <div class="detail-prop"><span>Resistencia química</span><span style="color:#c4b5fd">Clase A</span></div>
+      </div>
+      <div class="detail-desc" style="border-color:#c4b5fd;">
+        El gresite vitrificado es el acabado de referencia en piscinas de alto standing. Su superficie no porosa resiste los productos químicos del agua tratada, los rayos UV y las variaciones térmicas. La elección del color personaliza completamente la identidad visual de la piscina y define el tono del agua.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECCIÓN TRANSVERSAL VISUAL -->
+<div class="cross-section">
+  <div class="cross-title">Visualización transversal de capas — click para resaltar</div>
+  <div class="cross-wrap">
+    <div class="cross-layer" style="flex:3;background:#374151;color:#94a3b8;" onclick="showDetail(1)" title="Cor-Ten 6mm">
+      <span>COR-TEN</span><span class="mm">6 mm</span>
+    </div>
+    <div class="cross-layer" style="flex:.5;background:#1e293b;color:#C9A84C;" onclick="showDetail(2)" title="Granallado">
+      <span style="font-size:.55rem">SA2½</span>
+    </div>
+    <div class="cross-layer" style="flex:.8;background:rgba(74,191,204,.25);color:#4ABFCC;" onclick="showDetail(3)" title="Epoxy 80µm">
+      <span>EPOXY</span><span class="mm">80µm</span>
+    </div>
+    <div class="cross-layer" style="flex:1;background:rgba(99,102,241,.25);color:#818cf8;" onclick="showDetail(4)" title="C5M 120µm">
+      <span>C5M</span><span class="mm">120µm</span>
+    </div>
+    <div class="cross-layer" style="flex:2.5;background:rgba(52,211,153,.2);color:#34d399;" onclick="showDetail(5)" title="Costillaje IPE">
+      <span>COSTILLAJE IPE/RHS</span><span class="mm">963 kg</span>
+    </div>
+    <div class="cross-layer" style="flex:2;background:rgba(96,165,250,.2);color:#60a5fa;" onclick="showDetail(6)" title="WEDI 58m²">
+      <span>WEDI</span><span class="mm">58 m²</span>
+    </div>
+    <div class="cross-layer" style="flex:1.5;background:rgba(196,181,253,.25);color:#c4b5fd;" onclick="showDetail(7)" title="Gresite">
+      <span>GRESITE</span><span class="mm">PREM.</span>
+    </div>
+    <!-- AGUA -->
+    <div class="cross-layer" style="flex:8;background:rgba(14,116,144,.3);color:#22d3ee;">
+      <span>VASO · 33,5 m³ AGUA</span><span class="mm">≈ 33.500 L</span>
+    </div>
+  </div>
+</div>
+
+<!-- BARRA PROCESO -->
+<div class="process-bar" style="margin-top:24px;max-width:1200px;width:100%;">
+  <div class="process-step" style="background:#374151;" onclick="showDetail(1)">
+    <div class="ps-num" style="color:#94a3b8">1</div>
+    <div class="ps-label">Cor-Ten Naval</div>
+  </div>
+  <div class="process-step" style="background:#1e293b;" onclick="showDetail(2)">
+    <div class="ps-num" style="color:#C9A84C">2</div>
+    <div class="ps-label">Granallado</div>
+  </div>
+  <div class="process-step" style="background:rgba(74,191,204,.15);" onclick="showDetail(3)">
+    <div class="ps-num" style="color:#4ABFCC">3</div>
+    <div class="ps-label">Epoxy</div>
+  </div>
+  <div class="process-step" style="background:rgba(99,102,241,.15);" onclick="showDetail(4)">
+    <div class="ps-num" style="color:#818cf8">4</div>
+    <div class="ps-label">C5M Marino</div>
+  </div>
+  <div class="process-step" style="background:rgba(52,211,153,.1);" onclick="showDetail(5)">
+    <div class="ps-num" style="color:#34d399">5</div>
+    <div class="ps-label">Costillaje</div>
+  </div>
+  <div class="process-step" style="background:rgba(96,165,250,.1);" onclick="showDetail(6)">
+    <div class="ps-num" style="color:#60a5fa">6</div>
+    <div class="ps-label">WEDI</div>
+  </div>
+  <div class="process-step" style="background:rgba(196,181,253,.1);" onclick="showDetail(7)">
+    <div class="ps-num" style="color:#c4b5fd">7</div>
+    <div class="ps-label">Gresite</div>
+  </div>
+</div>
+
+<script>
+let currentLayer = null;
+const colors = {
+  1:'#94a3b8', 2:'#C9A84C', 3:'#4ABFCC',
+  4:'#818cf8', 5:'#34d399', 6:'#60a5fa', 7:'#c4b5fd'
+};
+
+function showDetail(n) {
+  // Reset all layers
+  for(let i=1;i<=7;i++){
+    document.getElementById('layer-'+i).classList.remove('active');
+    document.getElementById('detail-'+i).classList.remove('visible');
+  }
+  document.getElementById('detail-empty').style.display = 'none';
+
+  // Activate selected
+  document.getElementById('layer-'+n).classList.add('active');
+  document.getElementById('detail-'+n).classList.add('visible');
+
+  currentLayer = n;
+}
+
+// Auto-animate on load
+let autoIdx = 1;
+const autoInterval = setInterval(() => {
+  if(currentLayer) { clearInterval(autoInterval); return; }
+  showDetail(autoIdx);
+  autoIdx = autoIdx < 7 ? autoIdx+1 : 1;
+}, 1800);
+</script>
+</body>
+</html>

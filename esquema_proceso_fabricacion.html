@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proceso de Fabricación — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#0a0e1a;color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;padding:30px 20px;
+  }
+  h1{
+    font-family:'Space Mono',monospace;font-size:1.3rem;
+    letter-spacing:2px;text-transform:uppercase;
+    color:#f97316;margin-bottom:6px;text-align:center;
+  }
+  .subtitle{font-size:.85rem;color:#64748b;margin-bottom:30px;text-align:center;}
+
+  /* ──── BARRA PROGRESO TOTAL ──── */
+  .total-bar{
+    width:100%;max-width:1200px;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:16px;padding:22px 28px;margin-bottom:20px;
+  }
+  .total-bar-head{
+    display:flex;justify-content:space-between;
+    align-items:center;margin-bottom:14px;
+  }
+  .total-bar-title{
+    font-family:'Space Mono',monospace;font-size:.7rem;
+    letter-spacing:2px;text-transform:uppercase;color:#64748b;
+  }
+  .total-weeks{
+    font-family:'Space Mono',monospace;font-size:1.8rem;
+    font-weight:700;color:#f97316;
+  }
+  .total-weeks span{font-size:.75rem;color:#64748b;margin-left:4px;}
+  .weeks-track{
+    position:relative;height:12px;background:#1e293b;
+    border-radius:6px;overflow:hidden;
+  }
+  .weeks-fill{
+    height:100%;border-radius:6px;
+    background:linear-gradient(90deg,#f97316,#fbbf24);
+    transition:width 1.2s ease;width:0%;
+  }
+  .week-marks{
+    display:flex;justify-content:space-between;
+    margin-top:6px;
+  }
+  .week-mark{
+    font-family:'Space Mono',monospace;font-size:.6rem;
+    color:#334155;text-align:center;
+  }
+  .week-mark.active{color:#f97316;}
+
+  /* ──── TIMELINE DE FASES ──── */
+  .timeline-wrap{
+    width:100%;max-width:1200px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .phase-row{
+    display:flex;gap:0;align-items:stretch;
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;overflow:hidden;
+    cursor:pointer;transition:all .3s;
+  }
+  .phase-row:hover{border-color:var(--c);transform:translateX(3px);}
+  .phase-row.active{border-color:var(--c);background:#0d1425;}
+
+  .phase-num{
+    min-width:56px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    background:rgba(0,0,0,.3);
+    font-family:'Space Mono',monospace;font-size:1.6rem;
+    font-weight:700;padding:16px 0;
+    border-right:1px solid #1e293b;
+  }
+  .phase-num .phase-label{
+    font-size:.55rem;letter-spacing:1.5px;
+    text-transform:uppercase;margin-top:2px;
+    color:rgba(255,255,255,.4);
+  }
+  .phase-info{
+    flex:1;padding:14px 18px;display:flex;
+    flex-direction:column;justify-content:center;gap:4px;
+  }
+  .phase-name{font-weight:700;font-size:.95rem;}
+  .phase-sub{font-size:.78rem;color:#64748b;}
+  .phase-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .phase-tag{
+    font-family:'Space Mono',monospace;font-size:.6rem;
+    padding:2px 8px;border-radius:20px;font-weight:700;
+  }
+
+  /* Barra de duración */
+  .phase-duration{
+    min-width:200px;padding:14px 18px;
+    display:flex;flex-direction:column;justify-content:center;
+    gap:6px;border-left:1px solid #1e293b;
+  }
+  .dur-head{
+    display:flex;justify-content:space-between;
+    font-family:'Space Mono',monospace;font-size:.68rem;
+  }
+  .dur-bar{
+    height:6px;background:#1e293b;border-radius:3px;overflow:hidden;
+  }
+  .dur-fill{
+    height:100%;border-radius:3px;
+    transition:width 1.4s ease;width:0%;
+  }
+  .dur-note{font-size:.7rem;color:#475569;}
+
+  /* Ícono de estado */
+  .phase-status{
+    min-width:48px;display:flex;align-items:center;
+    justify-content:center;font-size:1.2rem;
+    border-left:1px solid #1e293b;
+    background:rgba(0,0,0,.2);
+  }
+
+  /* ──── PANEL DETALLE ──── */
+  .detail-wrap{
+    width:100%;max-width:1200px;
+    margin-top:12px;
+  }
+  .detail-box{
+    background:#0f1629;border:1px solid #1e293b;
+    border-radius:12px;padding:0;overflow:hidden;
+    max-height:0;transition:max-height .5s ease,padding .3s;
+  }
+  .detail-box.open{max-height:500px;padding:24px;}
+
+  .det-grid{display:flex;gap:24px;flex-wrap:wrap;}
+  .det-col{flex:1;min-width:220px;}
+  .det-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:5px 14px;border-radius:20px;
+    font-family:'Space Mono',monospace;font-size:.68rem;
+    font-weight:700;letter-spacing:1px;margin-bottom:12px;
+  }
+  .det-title{font-weight:700;font-size:1.1rem;margin-bottom:4px;}
+  .det-sub{font-size:.82rem;color:#64748b;margin-bottom:16px;}
+
+  .checklist{display:flex;flex-direction:column;gap:6px;}
+  .check-item{
+    display:flex;align-items:flex-start;gap:10px;
+    font-size:.82rem;line-height:1.5;
+  }
+  .check-icon{
+    width:18px;height:18px;border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.7rem;flex-shrink:0;margin-top:1px;
+  }
+
+  .det-kpis{display:flex;flex-direction:column;gap:10px;}
+  .kpi-row{
+    background:#131b2e;border-radius:8px;padding:12px 16px;
+    display:flex;justify-content:space-between;align-items:center;
+    border:1px solid #1e293b;
+  }
+  .kpi-lbl{font-size:.78rem;color:#64748b;}
+  .kpi-val{
+    font-family:'Space Mono',monospace;font-size:.95rem;
+    font-weight:700;
+  }
+
+  .det-desc{
+    font-size:.83rem;line-height:1.7;color:#94a3b8;
+    background:#131b2e;border-radius:8px;padding:14px;
+    border-left:3px solid;margin-top:14px;
+  }
+
+  /* ──── PIE: Resumen semanas ──── */
+  .summary-row{
+    display:flex;gap:0;width:100%;max-width:1200px;
+    margin-top:20px;border-radius:12px;overflow:hidden;
+    border:1px solid #1e293b;
+  }
+  .sum-item{
+    flex:1;padding:14px 10px;text-align:center;
+    background:#0f1629;border-right:1px solid #1e293b;
+    transition:background .3s;cursor:pointer;
+  }
+  .sum-item:last-child{border-right:none;}
+  .sum-item:hover{background:#131b2e;}
+  .sum-num{
+    font-family:'Space Mono',monospace;font-size:1.4rem;
+    font-weight:700;margin-bottom:2px;
+  }
+  .sum-lbl{font-size:.7rem;color:#64748b;}
+</style>
+</head>
+<body>
+
+<h1>Proceso de Fabricación</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — De la materia prima a la puesta en marcha · Ref. ZP-9M-PREM-2026-001</p>
+
+<!-- BARRA TOTAL -->
+<div class="total-bar">
+  <div class="total-bar-head">
+    <div class="total-bar-title">Plazo total estimado desde confirmación de pedido</div>
+    <div class="total-weeks">8–10 <span>semanas</span></div>
+  </div>
+  <div class="weeks-track">
+    <div class="weeks-fill" id="total-fill" style="width:0%"></div>
+  </div>
+  <div class="week-marks" id="week-marks"></div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap">
+
+  <!-- FASE 1 -->
+  <div class="phase-row" style="--c:#C9A84C" onclick="togglePhase(1)" id="prow-1">
+    <div class="phase-num" style="color:#C9A84C">
+      01
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#C9A84C">Ingeniería y Planificación</div>
+      <div class="phase-sub">Revisión técnica del pedido · Planos de fabricación · BOM completo</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(201,168,76,.15);color:#C9A84C">Planos CAD</span>
+        <span class="phase-tag" style="background:rgba(201,168,76,.15);color:#C9A84C">BOM</span>
+        <span class="phase-tag" style="background:rgba(201,168,76,.15);color:#C9A84C">Orden fabricación</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#C9A84C">Semana 1</span>
+        <span style="color:#64748b">1 semana</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-1" style="background:#C9A84C;width:0%"></div>
+      </div>
+      <div class="dur-note">12,5% del plazo total</div>
+    </div>
+    <div class="phase-status" style="color:#C9A84C">📐</div>
+  </div>
+
+  <!-- FASE 2 -->
+  <div class="phase-row" style="--c:#ef4444" onclick="togglePhase(2)" id="prow-2">
+    <div class="phase-num" style="color:#ef4444">
+      02
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#ef4444">Preparación Estructural</div>
+      <div class="phase-sub">Corte longitudinal 40' · Granallado SA2½ · Soldadura refuerzo interior</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(239,68,68,.15);color:#ef4444">Cor-Ten</span>
+        <span class="phase-tag" style="background:rgba(239,68,68,.15);color:#ef4444">Granallado</span>
+        <span class="phase-tag" style="background:rgba(239,68,68,.15);color:#ef4444">IPE/RHS Soldado</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#ef4444">Semanas 2–3</span>
+        <span style="color:#64748b">2 semanas</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-2" style="background:#ef4444;width:0%"></div>
+      </div>
+      <div class="dur-note">25% del plazo total</div>
+    </div>
+    <div class="phase-status" style="color:#ef4444">🔩</div>
+  </div>
+
+  <!-- FASE 3 -->
+  <div class="phase-row" style="--c:#818cf8" onclick="togglePhase(3)" id="prow-3">
+    <div class="phase-num" style="color:#818cf8">
+      03
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#818cf8">Tratamiento Anticorrosión C5M</div>
+      <div class="phase-sub">Imprimación epoxy · Pintura poliuretano marino · Control de espesores</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(129,140,248,.15);color:#818cf8">Epoxy 80µm</span>
+        <span class="phase-tag" style="background:rgba(129,140,248,.15);color:#818cf8">PU 120µm</span>
+        <span class="phase-tag" style="background:rgba(129,140,248,.15);color:#818cf8">ISO 12944-6</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#818cf8">Semanas 3–4</span>
+        <span style="color:#64748b">1,5 semanas</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-3" style="background:#818cf8;width:0%"></div>
+      </div>
+      <div class="dur-note">Incluye tiempos de curado</div>
+    </div>
+    <div class="phase-status" style="color:#818cf8">🎨</div>
+  </div>
+
+  <!-- FASE 4 -->
+  <div class="phase-row" style="--c:#60a5fa" onclick="togglePhase(4)" id="prow-4">
+    <div class="phase-num" style="color:#60a5fa">
+      04
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#60a5fa">Impermeabilización WEDI</div>
+      <div class="phase-sub">Instalación placas WEDI · Sellado juntas · Prueba estanqueidad 72h</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(96,165,250,.15);color:#60a5fa">58 m²</span>
+        <span class="phase-tag" style="background:rgba(96,165,250,.15);color:#60a5fa">Prueba 72h</span>
+        <span class="phase-tag" style="background:rgba(96,165,250,.15);color:#60a5fa">Sellado perimetral</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#60a5fa">Semanas 4–5</span>
+        <span style="color:#64748b">1,5 semanas</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-4" style="background:#60a5fa;width:0%"></div>
+      </div>
+      <div class="dur-note">72h prueba inundación</div>
+    </div>
+    <div class="phase-status" style="color:#60a5fa">💧</div>
+  </div>
+
+  <!-- FASE 5 -->
+  <div class="phase-row" style="--c:#c4b5fd" onclick="togglePhase(5)" id="prow-5">
+    <div class="phase-num" style="color:#c4b5fd">
+      05
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#c4b5fd">Alicatado Gresite Premium</div>
+      <div class="phase-sub">Aplicación teselas vitrificadas · Rejuntado · Acabados perimetrales</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(196,181,253,.15);color:#c4b5fd">58 m²</span>
+        <span class="phase-tag" style="background:rgba(196,181,253,.15);color:#c4b5fd">Color elegido</span>
+        <span class="phase-tag" style="background:rgba(196,181,253,.15);color:#c4b5fd">Rejuntado</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#c4b5fd">Semanas 5–6</span>
+        <span style="color:#64748b">1 semana</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-5" style="background:#c4b5fd;width:0%"></div>
+      </div>
+      <div class="dur-note">Según elección de color</div>
+    </div>
+    <div class="phase-status" style="color:#c4b5fd">◈</div>
+  </div>
+
+  <!-- FASE 6 -->
+  <div class="phase-row" style="--c:#34d399" onclick="togglePhase(6)" id="prow-6">
+    <div class="phase-num" style="color:#34d399">
+      06
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#34d399">Instalación Hidráulica y Eléctrica</div>
+      <div class="phase-sub">Sala técnica · Bombas · Cuadro IP65 · Focos LED · Domótica · Sistemas opcionales</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(52,211,153,.15);color:#34d399">Hidráulica</span>
+        <span class="phase-tag" style="background:rgba(52,211,153,.15);color:#34d399">CE IP65</span>
+        <span class="phase-tag" style="background:rgba(52,211,153,.15);color:#34d399">Opcionales</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#34d399">Semanas 6–7</span>
+        <span style="color:#64748b">1,5 semanas</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-6" style="background:#34d399;width:0%"></div>
+      </div>
+      <div class="dur-note">Paralelo con acabados exteriores</div>
+    </div>
+    <div class="phase-status" style="color:#34d399">⚡</div>
+  </div>
+
+  <!-- FASE 7 -->
+  <div class="phase-row" style="--c:#22d3ee" onclick="togglePhase(7)" id="prow-7">
+    <div class="phase-num" style="color:#22d3ee">
+      07
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#22d3ee">Tarima WPC y Acabados Exteriores</div>
+      <div class="phase-sub">Coronación perimetral · Plataforma acceso · Tapas integradas · Pintura exterior</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(34,211,238,.15);color:#22d3ee">16 m² WPC</span>
+        <span class="phase-tag" style="background:rgba(34,211,238,.15);color:#22d3ee">Coronación</span>
+        <span class="phase-tag" style="background:rgba(34,211,238,.15);color:#22d3ee">Acabado final</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#22d3ee">Semanas 7–8</span>
+        <span style="color:#64748b">1 semana</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-7" style="background:#22d3ee;width:0%"></div>
+      </div>
+      <div class="dur-note">Paralelo con fase 6</div>
+    </div>
+    <div class="phase-status" style="color:#22d3ee">🪵</div>
+  </div>
+
+  <!-- FASE 8 -->
+  <div class="phase-row" style="--c:#f97316" onclick="togglePhase(8)" id="prow-8">
+    <div class="phase-num" style="color:#f97316">
+      08
+      <div class="phase-label">Fase</div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-name" style="color:#f97316">Control de Calidad, Pruebas y Entrega</div>
+      <div class="phase-sub">Llenado + prueba funcional completa · Documentación técnica · Transporte y puesta en marcha</div>
+      <div class="phase-tags">
+        <span class="phase-tag" style="background:rgba(249,115,22,.15);color:#f97316">QC Final</span>
+        <span class="phase-tag" style="background:rgba(249,115,22,.15);color:#f97316">Prueba 48h</span>
+        <span class="phase-tag" style="background:rgba(249,115,22,.15);color:#f97316">Puesta en marcha</span>
+      </div>
+    </div>
+    <div class="phase-duration">
+      <div class="dur-head">
+        <span style="color:#f97316">Semanas 8–10</span>
+        <span style="color:#64748b">1,5 semanas</span>
+      </div>
+      <div class="dur-bar">
+        <div class="dur-fill" id="fill-8" style="background:#f97316;width:0%"></div>
+      </div>
+      <div class="dur-note">Incluye transporte e instalación</div>
+    </div>
+    <div class="phase-status" style="color:#f97316">✅</div>
+  </div>
+</div>
+
+<!-- PANEL DETALLE EXPANDIBLE -->
+<div class="detail-wrap">
+  <div class="detail-box" id="detail-box"></div>
+</div>
+
+<!-- RESUMEN BOTTOM -->
+<div class="summary-row">
+  <div class="sum-item" onclick="togglePhase(1)"><div class="sum-num" style="color:#C9A84C">8</div><div class="sum-lbl">Fases de producción</div></div>
+  <div class="sum-item" onclick="togglePhase(2)"><div class="sum-num" style="color:#ef4444">963 kg</div><div class="sum-lbl">Acero estructural</div></div>
+  <div class="sum-item" onclick="togglePhase(4)"><div class="sum-num" style="color:#60a5fa">72 h</div><div class="sum-lbl">Prueba estanqueidad</div></div>
+  <div class="sum-item" onclick="togglePhase(5)"><div class="sum-num" style="color:#c4b5fd">58 m²</div><div class="sum-lbl">WEDI + Gresite</div></div>
+  <div class="sum-item" onclick="togglePhase(8)"><div class="sum-num" style="color:#f97316">8–10 sem</div><div class="sum-lbl">Plazo total</div></div>
+</div>
+
+<script>
+const phases = {
+  1:{color:'#C9A84C',pct:12.5,title:'Ingeniería y Planificación',sub:'Semana 1 — 1 semana',
+    items:['Revisión técnica completa del pedido y especificaciones del cliente','Generación de planos CAD de fabricación (soldadura, corte, hidráulica)','BOM (Bill of Materials): lista de materiales con referencias y proveedores','Emisión de orden de fabricación interna con prioridades'],
+    kpis:[['Planos generados','CAD 2D + 3D'],['Revisión cliente','Incluida'],['Documentación','ISO trazable']],
+    desc:'La fase de ingeniería es la base de la Cero-Falla. Cada módulo ZARCA parte de un plano de fabricación específico para el cliente, validado técnicamente antes de tocar el primer centímetro de acero.'},
+  2:{color:'#ef4444',pct:25,title:'Preparación Estructural',sub:'Semanas 2–3 — 2 semanas',
+    items:['Selección y verificación del contenedor 40\' ISO (certificado, sin carga química previa)','Corte longitudinal a medida según plano técnico aprobado','Granallado interior y exterior SA2½ (ISO 8501-1) para máxima adherencia','Fabricación e instalación del costillaje IPE/RHS soldado: 963,50 kg de acero'],
+    kpis:[['Peso acero refuerzo','963,50 kg'],['Norma granallado','ISO 8501-1 SA2½'],['Perfil rugosidad','Rz 40–70 µm']],
+    desc:'El corazón estructural del módulo. El granallado SA2½ es la fase más crítica para garantizar la durabilidad de los recubrimientos. El costillaje transforma el contenedor en un vaso de piscina de ingeniería.'},
+  3:{color:'#818cf8',pct:19,title:'Tratamiento Anticorrosión C5M',sub:'Semanas 3–4 — 1,5 semanas',
+    items:['Aplicación de imprimación epoxy bicomponente (80 µm mínimo de espesor seco)','Curado en cámara controlada (temperatura y humedad relativa)','Aplicación de acabado poliuretano C5M (120 µm mínimo)','Control de espesores con medidor de película seca en 100% de la superficie'],
+    kpis:[['Epoxy','80 µm (seco)'],['Poliuretano C5M','120 µm (seco)'],['Durabilidad','&gt;15 años (H)']],
+    desc:'La certificación C5M es la máxima categoría anticorrosión para entornos marinos (offshore). Aplicada en piscina de contenedor, garantiza que el chasis exterior resiste indefinidamente la humedad constante y los aerosoles del agua tratada.'},
+  4:{color:'#60a5fa',pct:19,title:'Impermeabilización WEDI',sub:'Semanas 4–5 — 1,5 semanas',
+    items:['Instalación de placas WEDI en toda la superficie del vaso (base + 4 paredes): 58 m²','Sellado perimetral y de juntas con adhesivo hidráulico WEDI','Refuerzo de esquinas y encuentros con cinta de fibra de vidrio','Prueba de estanqueidad por inundación 72 horas continuas: control visual y sonda'],
+    kpis:[['Superficie','58 m² (base + paredes)'],['Prueba inundación','72 horas'],['Garantía','10 años estanqueidad']],
+    desc:'La prueba de inundación de 72 horas es innegociable en el proceso ZARCA. Ningún módulo avanza a la fase de gresite sin haber superado esta prueba. Si hay microfiltraciones, se detectan y corrigen antes del acabado final.'},
+  5:{color:'#c4b5fd',pct:12.5,title:'Alicatado Gresite Premium',sub:'Semanas 5–6 — 1 semana',
+    items:['Aplicación de adhesivo C2T (alta resistencia química) sobre el WEDI curado','Colocación manual de teselas de gresite vitrificado (25×25 mm o 50×50 mm)','Rejuntado con mortero de junta epoxy (alta resistencia a cloro y UV)','Acabados de coronación y encuentros escalera-vaso'],
+    kpis:[['Superficie alicatada','58 m²'],['Formato tesela','25×25 o 50×50 mm'],['Adhesivo','C2T Resistencia química']],
+    desc:'El gresite vitrificado es el acabado de referencia en piscinas de alto standing. Su instalación manual, tesela a tesela, garantiza una cobertura perfecta sin oquedades que puedan retener bacterias o debilitar la impermeabilización subyacente.'},
+  6:{color:'#34d399',pct:19,title:'Instalación Hidráulica y Eléctrica',sub:'Semanas 6–7 — 1,5 semanas',
+    items:['Instalación de bombas, filtro, válvulas y manifold PVC en sala técnica','Cableado del cuadro eléctrico IP65 con protecciones RCD y magnetotérmicos','Instalación de focos LED 12V AC (x4), skimmer, boquillas y sumidero','Instalación de todos los sistemas opcionales del pedido (persiana, UV, pH, clorador, Smart Pool)'],
+    kpis:[['Cuadro','IP65 + RCD + Diferencial'],['Tensión focos','12V AC (seguridad)'],['Smart Pool','Wi-Fi + App incluida']],
+    desc:'Toda la instalación eléctrica se realiza bajo norma de piscinas (REBT ITC-BT-31). Los focos trabajan a 12V para total seguridad en zona húmeda. El cuadro IP65 separa el circuito de la piscina del suministro general del cliente.'},
+  7:{color:'#22d3ee',pct:12.5,title:'Tarima WPC y Acabados Exteriores',sub:'Semanas 7–8 — 1 semana',
+    items:['Instalación de tarima perimetral WPC (16 m²): coronación interior y exterior 40 cm','Plataforma de acceso lateral (20 cm anchura adicional)','Integración de tapas de acceso a skimmer y elementos técnicos','Pintura exterior perimetral del chasis según elección de color del cliente'],
+    kpis:[['Superficie tarima','16 m² WPC'],['Coronación','40 cm perimetral'],['Mantenimiento WPC','Nulo (no requiere tratamiento)']],
+    desc:'La tarima WPC define la identidad visual del módulo. A diferencia de la madera natural, el WPC no requiere ningún tratamiento periódico, resiste la humedad constante y los rayos UV sin deformarse ni astillarse, con apariencia de madera premium.'},
+  8:{color:'#f97316',pct:19,title:'Control de Calidad, Pruebas y Entrega',sub:'Semanas 8–10 — 1,5 semanas',
+    items:['Llenado completo del vaso y prueba funcional de todos los sistemas 48 horas','Verificación de químicos de agua: pH, cloro libre, alcalinidad total, dureza','Generación del dossier técnico final: planos as-built, certificados, garantías','Transporte a destino en camión plataforma + instalación sobre losa cliente + puesta en marcha'],
+    kpis:[['Prueba funcional','48 horas lleno'],['Documentación','Dossier completo as-built'],['Puesta en marcha','Incluida en precio']],
+    desc:'El cliente recibe su módulo ZARCA listo para usar. La puesta en marcha incluye formación básica sobre operación y mantenimiento, configuración de la App Smart Pool y la primera carga de productos químicos.'}
+};
+
+let current = null;
+
+function togglePhase(n){
+  const rows = document.querySelectorAll('.phase-row');
+  rows.forEach(r=>r.classList.remove('active'));
+  const box = document.getElementById('detail-box');
+  const d = phases[n];
+  if(current===n){box.classList.remove('open');current=null;return;}
+  document.getElementById('prow-'+n).classList.add('active');
+  const itemsHtml = d.items.map(i=>`
+    <div class="check-item">
+      <div class="check-icon" style="background:${d.color}22;color:${d.color}">✓</div>
+      <span>${i}</span>
+    </div>`).join('');
+  const kpisHtml = d.kpis.map(([l,v])=>`
+    <div class="kpi-row">
+      <div class="kpi-lbl">${l}</div>
+      <div class="kpi-val" style="color:${d.color}">${v}</div>
+    </div>`).join('');
+  box.innerHTML=`
+    <div class="det-grid">
+      <div class="det-col">
+        <div class="det-badge" style="background:${d.color}18;color:${d.color};border:1px solid ${d.color}44">
+          FASE 0${n} — ${d.sub}
+        </div>
+        <div class="det-title" style="color:${d.color}">${d.title}</div>
+        <div class="det-sub">Actividades incluidas en esta fase</div>
+        <div class="checklist">${itemsHtml}</div>
+      </div>
+      <div class="det-col">
+        <div class="det-sub" style="margin-bottom:10px">Indicadores clave</div>
+        <div class="det-kpis">${kpisHtml}</div>
+        <div class="det-desc" style="border-color:${d.color}">${d.desc}</div>
+      </div>
+    </div>`;
+  box.classList.add('open');
+  current=n;
+}
+
+// Animar barras al cargar
+window.addEventListener('DOMContentLoaded',()=>{
+  // Semanas
+  const marks = document.getElementById('week-marks');
+  for(let i=1;i<=10;i++){
+    const d=document.createElement('div');
+    d.className='week-mark';
+    d.textContent='S'+i;
+    marks.appendChild(d);
+  }
+  setTimeout(()=>{
+    document.getElementById('total-fill').style.width='100%';
+    const pcts=[12.5,25,19,19,12.5,19,12.5,19];
+    pcts.forEach((p,i)=>{
+      setTimeout(()=>{
+        const f=document.getElementById('fill-'+(i+1));
+        if(f) f.style.width=p+'%';
+      },i*120);
+    });
+  },400);
+});
+</script>
+</body>
+</html>

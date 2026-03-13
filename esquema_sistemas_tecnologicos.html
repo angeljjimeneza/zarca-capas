@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Sistemas — ZARCA Infinity 9m Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0a0e1a; color:#e0e4ef;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh; display:flex;
+    flex-direction:column; align-items:center; padding:30px 20px;
+  }
+  h1 {
+    font-family:'Space Mono',monospace; font-size:1.3rem;
+    letter-spacing:2px; text-transform:uppercase;
+    color:#facc15; margin-bottom:6px; text-align:center;
+  }
+  .subtitle { font-size:0.85rem; color:#64748b; margin-bottom:30px; text-align:center; }
+
+  /* ── HUB RADIAL ── */
+  .hub-wrap {
+    width:100%; max-width:900px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:28px;
+    position:relative; overflow:hidden;
+  }
+  .hub-wrap::before {
+    content:''; position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    background:radial-gradient(circle at 50% 50%, rgba(201,168,76,.04) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .hub-svg-wrap { position:relative; }
+  .hub-svg-wrap svg { width:100%; height:auto; display:block; }
+
+  /* Nodo central pulsante */
+  @keyframes pulse {
+    0%,100%{r:38;opacity:1} 50%{r:42;opacity:.8}
+  }
+  .center-pulse { animation:pulse 3s infinite ease-in-out; }
+
+  /* Líneas animadas */
+  @keyframes dash {
+    to { stroke-dashoffset:0; }
+  }
+  .anim-line {
+    stroke-dasharray:8 4;
+    stroke-dashoffset:200;
+    animation:dash 2s linear infinite;
+    opacity:.5;
+  }
+  .anim-line.active-line { opacity:1; }
+
+  /* Nodo sistema */
+  .sys-node {
+    cursor:pointer; transition:all .3s;
+  }
+  .sys-node:hover .node-circle { filter:brightness(1.4); }
+  .sys-node.active .node-circle { filter:brightness(1.6); }
+  .sys-node:hover .node-glow { opacity:.4; }
+  .sys-node.active .node-glow { opacity:.6; }
+
+  /* ── GRID DE TARJETAS ── */
+  .systems-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+    gap:14px; width:100%; max-width:1200px; margin-top:20px;
+  }
+  .sys-card {
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:12px; padding:18px 16px;
+    cursor:pointer; transition:all .3s;
+    position:relative; overflow:hidden;
+    border-left:3px solid;
+  }
+  .sys-card::before {
+    content:''; position:absolute; inset:0;
+    opacity:0; transition:opacity .3s;
+    border-radius:12px;
+  }
+  .sys-card:hover::before { opacity:1; }
+  .sys-card.active::before { opacity:1; }
+  .sys-card:hover { transform:translateY(-2px); }
+  .sys-card.active { transform:translateY(-3px); }
+
+  .card-head {
+    display:flex; align-items:center; gap:10px; margin-bottom:10px;
+  }
+  .card-icon {
+    width:36px; height:36px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; flex-shrink:0;
+  }
+  .card-title { font-weight:700; font-size:0.9rem; line-height:1.2; }
+  .card-cap {
+    font-family:'Space Mono',monospace; font-size:0.6rem;
+    letter-spacing:1.5px; color:#475569; margin-top:1px;
+  }
+  .card-body { font-size:0.8rem; line-height:1.6; color:#94a3b8; margin-bottom:10px; }
+  .card-specs {
+    display:flex; flex-wrap:wrap; gap:6px;
+  }
+  .spec-tag {
+    font-family:'Space Mono',monospace; font-size:0.62rem;
+    padding:3px 8px; border-radius:20px; font-weight:700;
+  }
+
+  /* ── PANEL DETALLE EXPANDIDO ── */
+  .expanded-panel {
+    width:100%; max-width:1200px;
+    background:#0f1629; border:1px solid #1e293b;
+    border-radius:16px; padding:0;
+    overflow:hidden; max-height:0;
+    transition:max-height .5s ease, padding .3s;
+  }
+  .expanded-panel.open {
+    max-height:600px; padding:24px;
+  }
+  .exp-inner {
+    display:flex; gap:24px; flex-wrap:wrap;
+  }
+  .exp-info { flex:1; min-width:260px; }
+  .exp-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:5px 14px; border-radius:20px;
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    font-weight:700; letter-spacing:1px; margin-bottom:12px;
+  }
+  .exp-title { font-weight:700; font-size:1.15rem; margin-bottom:4px; }
+  .exp-sub { font-size:0.82rem; color:#64748b; margin-bottom:14px; }
+  .exp-props { margin-bottom:14px; }
+  .exp-prop {
+    display:flex; justify-content:space-between;
+    align-items:center; padding:6px 0;
+    border-bottom:1px solid #1e293b; font-size:0.82rem;
+  }
+  .exp-prop:last-child { border-bottom:none; }
+  .exp-prop span:first-child { color:#94a3b8; }
+  .exp-prop span:last-child { font-weight:600; }
+  .exp-desc {
+    font-size:0.83rem; line-height:1.7; color:#94a3b8;
+    background:#131b2e; border-radius:8px; padding:14px;
+    border-left:3px solid;
+  }
+  .exp-visual {
+    flex:0 0 220px; display:flex; flex-direction:column; gap:10px;
+    justify-content:center;
+  }
+  .exp-kpi {
+    background:#131b2e; border-radius:10px; padding:14px;
+    text-align:center; border:1px solid #1e293b;
+  }
+  .exp-kpi-val {
+    font-family:'Space Mono',monospace; font-size:1.5rem;
+    font-weight:700; margin-bottom:4px;
+  }
+  .exp-kpi-lbl { font-size:0.72rem; color:#475569; }
+</style>
+</head>
+<body>
+
+<h1>Mapa de Sistemas Tecnológicos</h1>
+<p class="subtitle">ZARCA Infinity 9m Premium — Ecosistema de 8 sistemas integrados · Ref. ZP-9M-PREM-2026-001</p>
+
+<!-- HUB RADIAL SVG -->
+<div class="hub-wrap">
+  <div class="hub-svg-wrap">
+    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="centerGrad" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#1B3A5C"/>
+          <stop offset="100%" stop-color="#0B1F3A"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Líneas de conexión -->
+      <!-- Cap 2: Contracorriente -->
+      <line class="anim-line" x1="450" y1="210" x2="100" y2="80" stroke="#22d3ee" stroke-width="1.5"/>
+      <!-- Cap 3: Persiana -->
+      <line class="anim-line" x1="450" y1="210" x2="280" y2="50" stroke="#818cf8" stroke-width="1.5"/>
+      <!-- Cap 4: pH -->
+      <line class="anim-line" x1="450" y1="210" x2="540" y2="50" stroke="#f472b6" stroke-width="1.5"/>
+      <!-- Cap 5: Cloración -->
+      <line class="anim-line" x1="450" y1="210" x2="720" y2="75" stroke="#4ade80" stroke-width="1.5"/>
+      <!-- Cap 6: UV -->
+      <line class="anim-line" x1="450" y1="210" x2="820" y2="180" stroke="#fbbf24" stroke-width="1.5"/>
+      <!-- Cap 7: Smart Pool -->
+      <line class="anim-line" x1="450" y1="210" x2="800" y2="340" stroke="#f97316" stroke-width="1.5"/>
+      <!-- Cap 8: Robot -->
+      <line class="anim-line" x1="450" y1="210" x2="560" y2="380" stroke="#a78bfa" stroke-width="1.5"/>
+      <!-- Cap 1: Base -->
+      <line class="anim-line" x1="450" y1="210" x2="130" y2="340" stroke="#C9A84C" stroke-width="1.5"/>
+
+      <!-- NODO CENTRAL -->
+      <circle class="center-pulse" cx="450" cy="210" r="38" fill="url(#centerGrad)" stroke="#C9A84C" stroke-width="1.5" filter="url(#glow)"/>
+      <text x="450" y="204" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#C9A84C" font-weight="700" letter-spacing="1">INFINITY</text>
+      <text x="450" y="218" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#C9A84C" font-weight="700">9M PREM.</text>
+      <circle cx="450" cy="210" r="52" fill="none" stroke="#C9A84C" stroke-width=".5" stroke-dasharray="3 6" opacity=".4"/>
+
+      <!-- Nodos sistemas -->
+      <!-- Cap 2 -->
+      <g class="sys-node" onclick="selectSys(2)" id="node-2">
+        <circle class="node-glow" cx="100" cy="80" r="32" fill="#22d3ee" opacity=".1"/>
+        <circle class="node-circle" cx="100" cy="80" r="26" fill="#0e1f30" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="100" y="76" text-anchor="middle" font-size="12" fill="#22d3ee">≋</text>
+        <text x="100" y="90" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#22d3ee">CAP.2</text>
+      </g>
+      <text x="100" y="118" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Contracorriente</text>
+
+      <!-- Cap 3 -->
+      <g class="sys-node" onclick="selectSys(3)" id="node-3">
+        <circle class="node-glow" cx="280" cy="50" r="32" fill="#818cf8" opacity=".1"/>
+        <circle class="node-circle" cx="280" cy="50" r="26" fill="#0e1f30" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="280" y="46" text-anchor="middle" font-size="12" fill="#818cf8">⬛</text>
+        <text x="280" y="60" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#818cf8">CAP.3</text>
+      </g>
+      <text x="280" y="88" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Persiana Auto.</text>
+
+      <!-- Cap 4 -->
+      <g class="sys-node" onclick="selectSys(4)" id="node-4">
+        <circle class="node-glow" cx="540" cy="50" r="32" fill="#f472b6" opacity=".1"/>
+        <circle class="node-circle" cx="540" cy="50" r="26" fill="#0e1f30" stroke="#f472b6" stroke-width="1.5"/>
+        <text x="540" y="46" text-anchor="middle" font-size="12" fill="#f472b6">pH</text>
+        <text x="540" y="60" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f472b6">CAP.4</text>
+      </g>
+      <text x="540" y="88" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Control pH Auto.</text>
+
+      <!-- Cap 5 -->
+      <g class="sys-node" onclick="selectSys(5)" id="node-5">
+        <circle class="node-glow" cx="720" cy="75" r="32" fill="#4ade80" opacity=".1"/>
+        <circle class="node-circle" cx="720" cy="75" r="26" fill="#0e1f30" stroke="#4ade80" stroke-width="1.5"/>
+        <text x="720" y="71" text-anchor="middle" font-size="11" fill="#4ade80">Cl</text>
+        <text x="720" y="85" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#4ade80">CAP.5</text>
+      </g>
+      <text x="720" y="112" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Cloración Salina</text>
+
+      <!-- Cap 6 -->
+      <g class="sys-node" onclick="selectSys(6)" id="node-6">
+        <circle class="node-glow" cx="820" cy="180" r="32" fill="#fbbf24" opacity=".1"/>
+        <circle class="node-circle" cx="820" cy="180" r="26" fill="#0e1f30" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="820" y="176" text-anchor="middle" font-size="12" fill="#fbbf24">☀</text>
+        <text x="820" y="190" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#fbbf24">CAP.6</text>
+      </g>
+      <text x="820" y="218" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">UV Desinfección</text>
+
+      <!-- Cap 7 -->
+      <g class="sys-node" onclick="selectSys(7)" id="node-7">
+        <circle class="node-glow" cx="800" cy="340" r="32" fill="#f97316" opacity=".1"/>
+        <circle class="node-circle" cx="800" cy="340" r="26" fill="#0e1f30" stroke="#f97316" stroke-width="1.5"/>
+        <text x="800" y="336" text-anchor="middle" font-size="12" fill="#f97316">◎</text>
+        <text x="800" y="350" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#f97316">CAP.7</text>
+      </g>
+      <text x="800" y="378" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Smart Pool</text>
+
+      <!-- Cap 8 -->
+      <g class="sys-node" onclick="selectSys(8)" id="node-8">
+        <circle class="node-glow" cx="560" cy="380" r="32" fill="#a78bfa" opacity=".1"/>
+        <circle class="node-circle" cx="560" cy="380" r="26" fill="#0e1f30" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="560" y="376" text-anchor="middle" font-size="12" fill="#a78bfa">⬡</text>
+        <text x="560" y="390" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#a78bfa">CAP.8</text>
+      </g>
+      <text x="560" y="414" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Robot Limpia</text>
+
+      <!-- Cap 1: Base -->
+      <g class="sys-node" onclick="selectSys(1)" id="node-1">
+        <circle class="node-glow" cx="130" cy="340" r="32" fill="#C9A84C" opacity=".1"/>
+        <circle class="node-circle" cx="130" cy="340" r="26" fill="#0e1f30" stroke="#C9A84C" stroke-width="1.5"/>
+        <text x="130" y="336" text-anchor="middle" font-size="12" fill="#C9A84C">◈</text>
+        <text x="130" y="350" text-anchor="middle" font-family="Space Mono" font-size="7" fill="#C9A84C">CAP.1</text>
+      </g>
+      <text x="130" y="378" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Base Premium</text>
+    </svg>
+  </div>
+</div>
+
+<!-- GRID DE TARJETAS -->
+<div class="systems-grid">
+
+  <div class="sys-card" id="card-1" onclick="selectSys(1)"
+    style="border-color:#C9A84C;">
+    <div style="position:absolute;inset:0;background:rgba(201,168,76,.06);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(201,168,76,.15);color:#C9A84C;">◈</div>
+      <div>
+        <div class="card-title" style="color:#C9A84C;">Piscina Base Premium</div>
+        <div class="card-cap">CAP. 1 — OBLIGATORIO</div>
+      </div>
+    </div>
+    <div class="card-body">Chasis Cor-Ten C5M + WEDI + Gresite + Filtración + Focos LED + Cuadro IP65</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(201,168,76,.15);color:#C9A84C;">33,5 m³</span>
+      <span class="spec-tag" style="background:rgba(201,168,76,.15);color:#C9A84C;">9,0 m</span>
+      <span class="spec-tag" style="background:rgba(201,168,76,.15);color:#C9A84C;">C5M</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-2" onclick="selectSys(2)"
+    style="border-color:#22d3ee;">
+    <div style="position:absolute;inset:0;background:rgba(34,211,238,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(34,211,238,.15);color:#22d3ee;">≋</div>
+      <div>
+        <div class="card-title" style="color:#22d3ee;">Nado Contracorriente</div>
+        <div class="card-cap">CAP. 2 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Turbina monobloc profesional · Cañón inyector inox · Botón neumático IP en vaso</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(34,211,238,.15);color:#22d3ee;">Alto caudal</span>
+      <span class="spec-tag" style="background:rgba(34,211,238,.15);color:#22d3ee;">Sin electricidad zona húmeda</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-3" onclick="selectSys(3)"
+    style="border-color:#818cf8;">
+    <div style="position:absolute;inset:0;background:rgba(129,140,248,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(129,140,248,.15);color:#818cf8;">⬛</div>
+      <div>
+        <div class="card-title" style="color:#818cf8;">Persiana Automática</div>
+        <div class="card-cap">CAP. 3 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Lamas policarbonato/aluminio · Motor IP68 · Mando hombre muerto · Normativa infantil</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(129,140,248,.15);color:#818cf8;">-80% energía</span>
+      <span class="spec-tag" style="background:rgba(129,140,248,.15);color:#818cf8;">IP68</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-4" onclick="selectSys(4)"
+    style="border-color:#f472b6;">
+    <div style="position:absolute;inset:0;background:rgba(244,114,182,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(244,114,182,.15);color:#f472b6;">pH</div>
+      <div>
+        <div class="card-title" style="color:#f472b6;">Control Auto. pH</div>
+        <div class="card-cap">CAP. 4 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Dosificador peristáltico + Sonda pH/ORP · Gestión automática 24h · Alertas App</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(244,114,182,.15);color:#f472b6;">pH 7.2–7.6</span>
+      <span class="spec-tag" style="background:rgba(244,114,182,.15);color:#f472b6;">ORP automático</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-5" onclick="selectSys(5)"
+    style="border-color:#4ade80;">
+    <div style="position:absolute;inset:0;background:rgba(74,222,128,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(74,222,128,.15);color:#4ade80;">Cl</div>
+      <div>
+        <div class="card-title" style="color:#4ade80;">Cloración Salina</div>
+        <div class="card-cap">CAP. 5 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Electrólisis de sal · Celda de titanio · Cloro activo in-situ · Sin productos almacenados</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(74,222,128,.15);color:#4ade80;">4–6 g/L sal</span>
+      <span class="spec-tag" style="background:rgba(74,222,128,.15);color:#4ade80;">Bajo coste</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-6" onclick="selectSys(6)"
+    style="border-color:#fbbf24;">
+    <div style="position:absolute;inset:0;background:rgba(251,191,36,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">☀</div>
+      <div>
+        <div class="card-title" style="color:#fbbf24;">Desinfección UV</div>
+        <div class="card-cap">CAP. 6 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Cámara UV media presión · Lámpara cuarzo · Elimina bacterias sin cloro</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(251,191,36,.15);color:#fbbf24;">-80% cloro</span>
+      <span class="spec-tag" style="background:rgba(251,191,36,.15);color:#fbbf24;">9.000–12.000 h</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-7" onclick="selectSys(7)"
+    style="border-color:#f97316;">
+    <div style="position:absolute;inset:0;background:rgba(249,115,22,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(249,115,22,.15);color:#f97316;">◎</div>
+      <div>
+        <div class="card-title" style="color:#f97316;">Smart Pool Domótica</div>
+        <div class="card-cap">CAP. 7 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Centralita Wi-Fi · App iOS+Android · Control temperatura, LED, química, horarios</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(249,115,22,.15);color:#f97316;">Wi-Fi nativo</span>
+      <span class="spec-tag" style="background:rgba(249,115,22,.15);color:#f97316;">Tablet incluida</span>
+    </div>
+  </div>
+
+  <div class="sys-card" id="card-8" onclick="selectSys(8)"
+    style="border-color:#a78bfa;">
+    <div style="position:absolute;inset:0;background:rgba(167,139,250,.05);border-radius:12px;"></div>
+    <div class="card-head">
+      <div class="card-icon" style="background:rgba(167,139,250,.15);color:#a78bfa;">⬡</div>
+      <div>
+        <div class="card-title" style="color:#a78bfa;">Robot Limpia Fondos</div>
+        <div class="card-cap">CAP. 8 — OPCIONAL</div>
+      </div>
+    </div>
+    <div class="card-body">Doble motor · Programable · Cable flotante 18m · Carrete y canasta incluidos</div>
+    <div class="card-specs">
+      <span class="spec-tag" style="background:rgba(167,139,250,.15);color:#a78bfa;">Autónomo</span>
+      <span class="spec-tag" style="background:rgba(167,139,250,.15);color:#a78bfa;">Scan fondo</span>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL EXPANDIDO -->
+<div class="expanded-panel" id="exp-panel">
+  <div class="exp-inner" id="exp-inner"></div>
+</div>
+
+<script>
+const sysData = {
+  1: {
+    color:'#C9A84C', icon:'◈', cap:'CAP. 1 — OBLIGATORIO',
+    title:'Piscina Base Premium', sub:'Estructura completa + Sistema de filtración + Acabados',
+    props:[
+      ['Longitud módulo','9,0 m (40\' ISO)'],
+      ['Capacidad vaso','33,5 m³ (≈33.500 L)'],
+      ['Profundidad','1,4 m zona central'],
+      ['Revestimiento','Gresite vitrificado premium'],
+      ['Impermeabilización','Sistema WEDI · 58 m²'],
+      ['Iluminación','4× focos LED RGB 12V AC'],
+      ['Certificación','C5M Offshore · ISO 12944-6'],
+    ],
+    desc:'La base estructural de ingeniería naval. El contenedor Cor-Ten transformado en vaso estanco mediante las 7 capas constructivas. Incluye toda la hidráulica básica, filtración por vidrio activo y el cuadro eléctrico IP65.',
+    kpis:[{v:'C5M',l:'Certificación'},{v:'10 años',l:'Garantía estructura'},{v:'58 m²',l:'WEDI estanco'}]
+  },
+  2: {
+    color:'#22d3ee', icon:'≋', cap:'CAP. 2 — OPCIONAL',
+    title:'Sistema Nado Contracorriente', sub:'Turbina monobloc profesional · Alta intensidad regulable',
+    props:[
+      ['Tipo','Turbina monobloc alto caudal'],
+      ['Cañón','Cabezal orientable inox subacuático'],
+      ['Rejilla aspiración','Ø200mm antibloqueo inox'],
+      ['Activación','Botón neumático IP (sin electricidad)'],
+      ['Instalación','Bypass hidráulico independiente'],
+      ['Regulación','Embellecedor exterior giratorio'],
+    ],
+    desc:'Permite el nado estático en los 9 metros del módulo. El botón neumático garantiza la activación desde dentro del agua sin ningún riesgo eléctrico. La intensidad del flujo es regulable girando el cañón inyector bajo el agua.',
+    kpis:[{v:'Alto',l:'Caudal'},{v:'IP',l:'Seguridad eléctrica'},{v:'Regulable',l:'Intensidad'}]
+  },
+  3: {
+    color:'#818cf8', icon:'⬛', cap:'CAP. 3 — OPCIONAL',
+    title:'Persiana Automática Elevada', sub:'Seguridad · Ahorro energético · Normativa infantil',
+    props:[
+      ['Lamas','Policarbonato o aluminio'],
+      ['Motor','Tubular 230V IP68'],
+      ['Mando','Hombre muerto IP65 · 3 posiciones'],
+      ['Ahorro energético','-80% consumo bomba calor'],
+      ['Seguridad','Normativa EN 13451 infantil'],
+      ['Posición','Extremo opuesto a escalera'],
+    ],
+    desc:'La persiana no es solo seguridad: cuando está cerrada reduce la evaporación del vaso, lo que disminuye el consumo de la bomba de calor hasta un 80%. El sistema de hombre muerto exige supervisión visual continua durante el movimiento.',
+    kpis:[{v:'-80%',l:'Ahorro energético'},{v:'IP68',l:'Motor'},{v:'EN 13451',l:'Normativa'}]
+  },
+  4: {
+    color:'#f472b6', icon:'pH', cap:'CAP. 4 — OPCIONAL',
+    title:'Control Automático de pH', sub:'Dosificación 24h · Alertas en tiempo real',
+    props:[
+      ['Dosificador','Bomba peristáltica automática'],
+      ['Sonda','pH + ORP (potencial redox)'],
+      ['Rango objetivo','pH 7.2 – 7.6'],
+      ['Calibración','Inicial incluida'],
+      ['Alertas','Via App Smart Pool'],
+      ['Primera carga','Producto incluido'],
+    ],
+    desc:'Mantiene el pH del agua dentro del rango óptimo de forma completamente autónoma, las 24 horas. La sonda ORP mide también el potencial redox del agua, indicando la eficiencia real de la desinfección, no solo el pH.',
+    kpis:[{v:'7.2–7.6',l:'pH objetivo'},{v:'24h',l:'Gestión automática'},{v:'ORP',l:'Sensor redox'}]
+  },
+  5: {
+    color:'#4ade80', icon:'Cl', cap:'CAP. 5 — OPCIONAL',
+    title:'Cloración Salina', sub:'Electrólisis · Cloro activo in-situ · Bajo coste operativo',
+    props:[
+      ['Tecnología','Electrólisis de sal (NaCl)'],
+      ['Celda','Titanio (larga vida útil)'],
+      ['Sal agua','4 – 6 g/L (agua ligeramente salada)'],
+      ['Controlador','ORP automático'],
+      ['Primera carga','Sal incluida'],
+      ['Compatibilidad','100% apto con sistema WEDI'],
+    ],
+    desc:'Genera cloro activo directamente en el agua a partir de sal común (NaCl), sin necesidad de almacenar productos químicos peligrosos. El agua tiene una concentración de sal aproximada a la de las lágrimas: suave, no irritante y mucho más agradable que el cloro convencional.',
+    kpis:[{v:'In-situ',l:'Producción cloro'},{v:'Sal común',l:'Materia prima'},{v:'Bajo',l:'Coste operativo'}]
+  },
+  6: {
+    color:'#fbbf24', icon:'☀', cap:'CAP. 6 — OPCIONAL',
+    title:'Desinfección UV', sub:'Lámpara cuarzo media presión · Sin productos químicos',
+    props:[
+      ['Tipo','Cámara UV media presión'],
+      ['Lámpara','Cuarzo Ø25-40mm'],
+      ['Vida útil lámpara','9.000 – 12.000 h'],
+      ['Instalación','Bypass con válvulas aislamiento'],
+      ['Efecto','Elimina bacterias + algas sin cloro'],
+      ['Reducción cloro','-80% cloro libre necesario'],
+    ],
+    desc:'La radiación UV de media presión destruye el ADN de bacterias, virus y algas sin generar subproductos químicos. Al combinarla con el clorador salino (Cap.5), se obtiene un agua de calidad excepcional con concentraciones mínimas de cloro activo.',
+    kpis:[{v:'-80%',l:'Cloro necesario'},{v:'12.000 h',l:'Vida útil lámpara'},{v:'Ninguno',l:'Subproductos'}]
+  },
+  7: {
+    color:'#f97316', icon:'◎', cap:'CAP. 7 — OPCIONAL',
+    title:'Smart Pool Domótica', sub:'Control total desde App iOS / Android',
+    props:[
+      ['Centralita','Wi-Fi integrado · Cloud connect'],
+      ['App','iOS + Android (descarga gratuita)'],
+      ['Control','Temperatura, LED, química, horarios'],
+      ['Sondas','Temperatura + pH + ORP en tiempo real'],
+      ['Módulo LED','Control color + escenas + temporizador'],
+      ['Formación','Tablet + configuración inicial incluida'],
+    ],
+    desc:'Convierte la piscina en un sistema inteligente controlable desde cualquier lugar del mundo. Programa el encendido de la filtración, ajusta la temperatura, cambia el color de los focos o recibe alertas si la química se sale de rango, todo desde el móvil.',
+    kpis:[{v:'Wi-Fi',l:'Conectividad'},{v:'iOS+Android',l:'App'},{v:'Tablet',l:'Incluida'}]
+  },
+  8: {
+    color:'#a78bfa', icon:'⬡', cap:'CAP. 8 — OPCIONAL',
+    title:'Robot Limpia Fondos', sub:'Autónomo · Programable · Sin intervención manual',
+    props:[
+      ['Motores','Doble motor (tracción + succión)'],
+      ['Filtros','Caucho, acceso superior'],
+      ['Cable','18m flotante anti-enganche'],
+      ['Carrete','Almacenamiento incluido'],
+      ['Canasta','Transporte y secado incluida'],
+      ['Garantía','2 años (fabricante)'],
+    ],
+    desc:'El robot escanea el fondo y las paredes del vaso de forma autónoma, aspirando sedimentos y detritos sin ninguna intervención del usuario. El carrete de cable evita enredos y facilita el almacenaje. Ideal para piscinas usadas frecuentemente.',
+    kpis:[{v:'Autónomo',l:'Funcionamiento'},{v:'18 m',l:'Cable flotante'},{v:'2 años',l:'Garantía'}]
+  }
+};
+
+let currentSys = null;
+
+function selectSys(n) {
+  // Reset tarjetas
+  for(let i=1;i<=8;i++){
+    const c = document.getElementById('card-'+i);
+    if(c) c.classList.remove('active');
+  }
+
+  const card = document.getElementById('card-'+n);
+  if(card) card.classList.add('active');
+
+  const d = sysData[n];
+  const panel = document.getElementById('exp-panel');
+  const inner = document.getElementById('exp-inner');
+
+  const kpiHtml = d.kpis.map(k=>`
+    <div class="exp-kpi">
+      <div class="exp-kpi-val" style="color:${d.color}">${k.v}</div>
+      <div class="exp-kpi-lbl">${k.l}</div>
+    </div>
+  `).join('');
+
+  const propsHtml = d.props.map(([k,v])=>`
+    <div class="exp-prop">
+      <span>${k}</span>
+      <span style="color:${d.color}">${v}</span>
+    </div>
+  `).join('');
+
+  inner.innerHTML = `
+    <div class="exp-info">
+      <div class="exp-badge" style="background:rgba(0,0,0,.2);color:${d.color};border:1px solid ${d.color}40">
+        ${d.icon} ${d.cap}
+      </div>
+      <div class="exp-title" style="color:${d.color}">${d.title}</div>
+      <div class="exp-sub">${d.sub}</div>
+      <div class="exp-props">${propsHtml}</div>
+      <div class="exp-desc" style="border-color:${d.color}">${d.desc}</div>
+    </div>
+    <div class="exp-visual">${kpiHtml}</div>
+  `;
+
+  if(currentSys === n){
+    panel.classList.remove('open');
+    currentSys = null;
+    card.classList.remove('active');
+  } else {
+    panel.classList.add('open');
+    currentSys = n;
+  }
+}
+
+// Auto-highlight on load
+let autoN = 1;
+const autoInt = setInterval(()=>{
+  if(currentSys){ clearInterval(autoInt); return; }
+  for(let i=1;i<=8;i++) document.getElementById('node-'+i)?.classList.remove('active');
+  document.getElementById('node-'+autoN)?.classList.add('active');
+  autoN = autoN < 8 ? autoN+1 : 1;
+}, 1200);
+</script>
+</body>
+</html>
